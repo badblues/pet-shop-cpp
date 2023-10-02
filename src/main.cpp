@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sql.h>
 #include <sqlext.h>
+#include "Menu.h"
 
 using namespace std;
 
@@ -16,12 +17,8 @@ int main() {
         string port = "5432";
 
 
-        string connectionString = "DRIVER=" + driver + ";" +
-                                       "DATABASE=" + database + ";" +
-                                       "SERVER=" + server + ";" +
-                                       "PORT=" + port + ";" +
-                                       "UID=" + username + ";" +
-                                       "PWD=" + password + ";";
+        string connectionString = "DRIVER=" + driver + ";DATABASE=" + database + ";SERVER=" +
+                                  server + ";PORT=" + port + ";UID=" + username + ";PWD=" + password + ";";
 
         SQLHENV hEnv;
         SQLHDBC hDbc;
@@ -36,17 +33,20 @@ int main() {
                                                0, nullptr, SQL_DRIVER_COMPLETE);
 
         if (sqlreturn == SQL_SUCCESS || sqlreturn == SQL_SUCCESS_WITH_INFO) {
-            cout << "hou\n";
+            Menu menu = new Menu(hDbc);
+            menu.showMenu();
             SQLDisconnect(hDbc);
         } else {
-            cerr << "Connection failed" << endl;
+            cerr << "Connection failed\n";
+            cerr << sqlreturn << "\n";
+            cerr << connectionString << "\n";
         }
 
         SQLFreeHandle(SQL_HANDLE_DBC, hDbc);
         SQLFreeHandle(SQL_HANDLE_ENV, hEnv);
 
     } catch (const exception &e) {
-        cerr << e.what() << endl;
+        cerr << e.what() << "\n";
         return 1;
     }
 
