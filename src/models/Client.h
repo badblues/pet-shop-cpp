@@ -16,10 +16,30 @@ class Client {
 
     string toString() {
         std::ostringstream oss;
-        oss << "{id = " << id <<
-            "; name = " << name <<
-            "; address = " << address << "}";
+        oss << "[id = " << id <<
+               "; name = '" << name <<
+               "'; address = '" << address << "'];}";
         return oss.str();
+    }
+
+    int getId() {
+      return id;
+    }
+
+    string getName() {
+      return name;
+    }
+
+    void setName(string name) {
+      this->name = name;
+    }
+
+    string getAddress() {
+      return address;
+    }
+
+    void setAddress(string address) {
+      this->address = address;
     }
 
   private:

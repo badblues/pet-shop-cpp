@@ -5,32 +5,30 @@
 #include <stdexcept>
 #include <sstream>
 #include <string>
-#include "../models/Client.h"
+#include "../models/Breed.h"
 
-class ClientDatabaseGateway {
+class BreedDatabaseGateway {
 
   public:
 
-    ClientDatabaseGateway() {
+    BreedDatabaseGateway() {
       hDbc = nullptr;
     }
 
-    ClientDatabaseGateway(SQLHDBC hDbc) {
+    BreedDatabaseGateway(SQLHDBC hDbc) {
       this->hDbc = hDbc;
     }
 
-    Client create(string name, string address) {
+    Breed create(string name) {
         SQLHSTMT hStmt;
         SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-        SQLCHAR* insertQuery = (SQLCHAR*)"INSERT INTO clients (name, address) VALUES (?, ?)";
+        SQLCHAR* insertQuery = (SQLCHAR*)"INSERT INTO breeds (name) VALUES (?)";
         SQLPrepare(hStmt, insertQuery, SQL_NTS);
 
         // Задайте параметры для вставки
         const SQLCHAR* sqlName = reinterpret_cast<const SQLCHAR*>(name.c_str());
-        const SQLCHAR* sqlAddress = reinterpret_cast<const SQLCHAR*>(address.c_str());
         SQLBindParameter(hStmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (SQLPOINTER)sqlName, 0, NULL);
-        SQLBindParameter(hStmt, 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (SQLPOINTER)sqlAddress, 0, NULL);
         
         if (SQLExecute(hStmt) != SQL_SUCCESS) {
           SQLCHAR sqlState[6];
@@ -51,14 +49,14 @@ class ClientDatabaseGateway {
 
         SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
 
-        return Client(id, name, address);
+        return Breed(id, name);
     }
 
-    Client get(int id) {
+    Breed get(int id) {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      SQLCHAR* selectQuery = (SQLCHAR*)"SELECT * FROM clients WHERE id = ?";
+      SQLCHAR* selectQuery = (SQLCHAR*)"SELECT * FROM breeds WHERE id = ?";
       SQLPrepare(hStmt, selectQuery, SQL_NTS);
 
       SQLBindParameter(hStmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &id, 0, NULL);
@@ -77,27 +75,24 @@ class ClientDatabaseGateway {
       } 
 
       SQLCHAR name[256];
-      SQLCHAR address[256];
 
       // Привязываем столбцы результата к переменным
       SQLBindCol(hStmt, 2, SQL_C_CHAR, name, sizeof(name), NULL);
-      SQLBindCol(hStmt, 3, SQL_C_CHAR, address, sizeof(address), NULL);
 
       // Извлекаем данные из результирующего набора
       SQLFetch(hStmt);
       std::string strName(reinterpret_cast<char*>(name));
-      std::string strAddress(reinterpret_cast<char*>(address));
 
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
 
-      return Client(id, strName, strAddress);
+      return Breed(id, strName);
     }
 
-    vector<Client> findByName(string name) {
+    vector<Breed> findByName(string name) {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      SQLCHAR* selectQuery = (SQLCHAR*)"SELECT * FROM clients WHERE name = ?";
+      SQLCHAR* selectQuery = (SQLCHAR*)"SELECT * FROM breeds WHERE name = ?";
       SQLPrepare(hStmt, selectQuery, SQL_NTS);
 
       const SQLCHAR* sqlName = reinterpret_cast<const SQLCHAR*>(name.c_str());
@@ -116,36 +111,33 @@ class ClientDatabaseGateway {
         throw std::runtime_error(errorMessage);
       } 
 
-      vector<Client> clients;
+      vector<Breed> breeds;
 
       SQLINTEGER id;
       SQLCHAR sdlName[256];
-      SQLCHAR address[256];
 
       // Привязываем столбцы результата к переменным
       SQLBindCol(hStmt, 1, SQL_C_SLONG, &id, sizeof(id), NULL);
       SQLBindCol(hStmt, 2, SQL_C_CHAR, sdlName, sizeof(sdlName), NULL);
-      SQLBindCol(hStmt, 3, SQL_C_CHAR, address, sizeof(address), NULL);
 
       // Извлекаем данные из результирующего набора
       while(SQLFetch(hStmt) == SQL_SUCCESS) {
         std::string strName(reinterpret_cast<char*>(sdlName));
-        std::string strAddress(reinterpret_cast<char*>(address));
-        Client client = Client(id, strName, strAddress);
-        clients.push_back(client);
+        Breed breed = Breed(id, strName);
+        breeds.push_back(breed);
       }
 
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
 
-      return clients;
+      return breeds;
     }
 
 
-    vector<Client> getAll() {
+    vector<Breed> getAll() {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      SQLCHAR* selectQuery = (SQLCHAR*)"SELECT * FROM clients;";
+      SQLCHAR* selectQuery = (SQLCHAR*)"SELECT * FROM breeds;";
       SQLPrepare(hStmt, selectQuery, SQL_NTS);
 
       if (SQLExecute(hStmt) != SQL_SUCCESS) {
@@ -161,42 +153,37 @@ class ClientDatabaseGateway {
         throw std::runtime_error(errorMessage);
       } 
 
-      vector<Client> clients;
+      vector<Breed> breeds;
 
       SQLINTEGER id;
       SQLCHAR name[256];
-      SQLCHAR address[256];
 
       // Привязываем столбцы результата к переменным
       SQLBindCol(hStmt, 1, SQL_C_SLONG, &id, sizeof(id), NULL);
       SQLBindCol(hStmt, 2, SQL_C_CHAR, name, sizeof(name), NULL);
-      SQLBindCol(hStmt, 3, SQL_C_CHAR, address, sizeof(address), NULL);
 
       // Извлекаем данные из результирующего набора
       while (SQLFetch(hStmt) == SQL_SUCCESS) {
         std::string strName(reinterpret_cast<char*>(name));
-        std::string strAddress(reinterpret_cast<char*>(address));
-        Client client = Client(id, strName, strAddress);
-        clients.push_back(client);
+        Breed breed = Breed(id, strName);
+        breeds.push_back(breed);
       }
 
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
-      return clients;
+      return breeds;
     }
 
-    Client update(int id, string name, string address) {
+    Breed update(int id, string name) {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      SQLCHAR* updateQuery = (SQLCHAR*)"UPDATE clients SET name = ?, address = ? WHERE id = ?";
+      SQLCHAR* updateQuery = (SQLCHAR*)"UPDATE breeds SET name = ? WHERE id = ?";
       SQLPrepare(hStmt, updateQuery, SQL_NTS);
 
       // Задайте параметры для обновления
       const SQLCHAR* sqlName = reinterpret_cast<const SQLCHAR*>(name.c_str());
-      const SQLCHAR* sqlAddress = reinterpret_cast<const SQLCHAR*>(address.c_str());
       SQLBindParameter(hStmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (SQLPOINTER)sqlName, 0, NULL);
-      SQLBindParameter(hStmt, 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (SQLPOINTER)sqlAddress, 0, NULL);
-      SQLBindParameter(hStmt, 3, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &id, 0, NULL);
+      SQLBindParameter(hStmt, 2, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &id, 0, NULL);
 
       if (SQLExecute(hStmt) != SQL_SUCCESS) {
         SQLCHAR sqlState[6];
@@ -214,14 +201,14 @@ class ClientDatabaseGateway {
 
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
 
-      return Client(id, name, address);
+      return Breed(id, name);
     }
 
     void remove(int id) {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      SQLCHAR* deleteQuery = (SQLCHAR*)"DELETE FROM clients WHERE id = ?";
+      SQLCHAR* deleteQuery = (SQLCHAR*)"DELETE FROM breeds WHERE id = ?";
       SQLPrepare(hStmt, deleteQuery, SQL_NTS);
 
       SQLBindParameter(hStmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &id, 0, NULL);
@@ -240,7 +227,6 @@ class ClientDatabaseGateway {
       } 
 
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
-      
     }
 
 

@@ -33,13 +33,11 @@ int main() {
                                                0, nullptr, SQL_DRIVER_COMPLETE);
 
         if (sqlreturn == SQL_SUCCESS || sqlreturn == SQL_SUCCESS_WITH_INFO) {
-            Menu menu = new Menu(hDbc);
+            Menu menu = Menu(hDbc);
             menu.showMenu();
             SQLDisconnect(hDbc);
         } else {
             cerr << "Connection failed\n";
-            cerr << sqlreturn << "\n";
-            cerr << connectionString << "\n";
         }
 
         SQLFreeHandle(SQL_HANDLE_DBC, hDbc);
