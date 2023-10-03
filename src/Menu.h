@@ -6,6 +6,7 @@
 #include "./gateways/ClientDatabaseGateway.h"
 #include "./gateways/BreedDatabaseGateway.h"
 #include "./gateways/EmployeeDatabaseGateway.h"
+#include "./gateways/ApplicationDatabaseGateway.h"
 
 using namespace std;
 
@@ -18,6 +19,7 @@ class Menu {
       this->clientGateway = ClientDatabaseGateway(hDbc);
       this->breedGateway = BreedDatabaseGateway(hDbc);
       this->employeeGateway = EmployeeDatabaseGateway(hDbc);
+      this->applicationGateway = ApplicationDatabaseGateway(hDbc);
     }
 
     void showMenu() {
@@ -29,8 +31,9 @@ class Menu {
                 "1. To clients base\n" <<
                 "2. To breeds base\n" <<
                 "3. To employees base\n" <<
+                "4. To applications\n" <<
                 "0. Exit\n";
-        choice = getChoice(0, 3);
+        choice = getChoice(0, 4);
         switch(choice){
           case 1:  //clients menu
             while(innerMenuRunning) {
@@ -123,6 +126,33 @@ class Menu {
               }
             }
             break;
+          case 4:
+            while(innerMenuRunning) {
+              cout << "\033[2J\033[H";
+              cout << "Applications menu:\n" << 
+                      "1. List applications\n" <<
+                      "2. New application\n" <<
+                      "0. Back\n";
+              choice = getChoice(0, 2);
+              switch(choice) {
+                case 1:
+                  printApplications();
+                  break;
+                case 2:
+                  addApplication();
+                  break;
+                // case 3:
+                //   updateClient();
+                //   break;
+                // case 4:
+                //   removeClient();
+                //   break;
+                case 0:
+                  innerMenuRunning = false;
+                  break;
+              }
+            }
+            break;
           case 0:
             menuRunning = false;
             break;
@@ -135,6 +165,7 @@ class Menu {
     ClientDatabaseGateway clientGateway;
     BreedDatabaseGateway breedGateway;
     EmployeeDatabaseGateway employeeGateway;
+    ApplicationDatabaseGateway applicationGateway;
     bool menuRunning = true;
     bool innerMenuRunning = true;
 
@@ -153,15 +184,23 @@ class Menu {
     void addClient();
     void updateClient();
     void removeClient();
+    int inputClientId();
 
     void printBreeds();
     void addBreed();
     void updateBreed();
     void removeBreed();
+    int inputBreedId();
 
     void printEmployees();
     void addEmployee();
     void updateEmployee();
     void removeEmployee();
     void findEmployeeByPosition();
+    int inputEmployeeId();
+
+    void printApplications();
+    void addApplication();
+
+    Gender* inputGender();
 };
