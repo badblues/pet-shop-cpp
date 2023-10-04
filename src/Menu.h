@@ -47,7 +47,7 @@ class Menu {
               choice = getChoice(0, 4);
               switch(choice) {
                 case 1:
-                  printClients();
+                  listClients();
                   break;
                 case 2:
                   addClient();
@@ -76,7 +76,7 @@ class Menu {
               choice = getChoice(0, 4);
               switch(choice) {
                 case 1:
-                  printBreeds();
+                  listBreeds();
                   break;
                 case 2:
                   addBreed();
@@ -106,7 +106,7 @@ class Menu {
               choice = getChoice(0, 5);
               switch(choice) {
                 case 1:
-                  printEmployees();
+                  listEmployees();
                   break;
                 case 2:
                   addEmployee();
@@ -132,21 +132,39 @@ class Menu {
               cout << "Applications menu:\n" << 
                       "1. List applications\n" <<
                       "2. New application\n" <<
+                      "3. Update application\n" <<
+                      "4. Close application\n" <<
+                      "5. Delete application\n" <<
+                      "6. Find by client\n" <<
+                      "7. Find by employee\n" <<
+                      "8. Find by breed\n" <<
                       "0. Back\n";
-              choice = getChoice(0, 2);
+              choice = getChoice(0, 8);
               switch(choice) {
                 case 1:
-                  printApplications();
+                  listApplications();
                   break;
                 case 2:
                   addApplication();
                   break;
-                // case 3:
-                //   updateClient();
-                //   break;
-                // case 4:
-                //   removeClient();
-                //   break;
+                case 3:
+                  updateApplication();
+                  break;
+                case 4:
+                  closeApplication();
+                  break;
+                case 5:
+                  removeApplication();
+                  break;
+                case 6:
+                  listApplicationsByClient();
+                  break;
+                case 7:
+                  listApplicationsByEmployee();
+                  break;
+                case 8:
+                  listApplicationsByBreed();
+                  break;
                 case 0:
                   innerMenuRunning = false;
                   break;
@@ -180,27 +198,41 @@ class Menu {
       return choice;
     }
 
-    void printClients();
+    void listClients();
     void addClient();
     void updateClient();
     void removeClient();
+    void printClients(vector<Client> clients);
+    void printClient(Client client);
     int inputClientId();
 
-    void printBreeds();
+    void listBreeds();
     void addBreed();
     void updateBreed();
     void removeBreed();
+    void printBreeds(vector<Breed> breeds);
+    void printBreed(Breed breed);
     int inputBreedId();
 
-    void printEmployees();
+    void listEmployees();
     void addEmployee();
     void updateEmployee();
     void removeEmployee();
     void findEmployeeByPosition();
+    void printEmployees(vector<Employee> employees);
+    void printEmployee(Employee employee);
     int inputEmployeeId();
 
-    void printApplications();
+    void listApplications();
     void addApplication();
-
+    void updateApplication();
+    void closeApplication();
+    void removeApplication();
+    void listApplicationsByClient();
+    void listApplicationsByEmployee();
+    void listApplicationsByBreed();
+    void printApplications(vector<Application> applications);
+    void printApplication(Application application);
+    int inputApplicationId();
     optional<Gender> inputGender();
 };
