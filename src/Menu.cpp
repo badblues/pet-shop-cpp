@@ -31,17 +31,36 @@ void Menu::addClient() {
   }
 }
 
-void Menu::updateClient() {
+void Menu::changeClientName() {
   int id = inputClientId();
   if (id == -1)
     return;
   string name;
-  string address;
-  cout << "Enter name:\n";
+  cout << "Enter new name:\n";
   getline(cin, name);
-  cout << "Enter address:\n";
+  try {
+    Client oldClient = clientGateway.get(id);
+    string address = oldClient.getAddress();
+    Client updatedClient = clientGateway.update(id, name, address);
+    cout << "Success!\n";
+    printClient(updatedClient);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
+void Menu::changeClientAddress() {
+  int id = inputClientId();
+  if (id == -1)
+    return;
+  string address;
+  cout << "Enter new address:\n";
   getline(cin, address);
   try {
+    Client oldClient = clientGateway.get(id);
+    string name = oldClient.getName();
     Client updatedClient = clientGateway.update(id, name, address);
     cout << "Success!\n";
     printClient(updatedClient);
@@ -93,13 +112,9 @@ int Menu::inputClientId() {
   for (int i = 0; i < clients.size(); i++) {
     cout << i + 1 << ". " << clients[i].getName() << ", address: " << clients[i].getAddress() << "\n";
   }
-  if (clients.size() > 1) {
-    cout << "What client?\n";
-    int choice = getChoice(1, clients.size());
-    id = clients[choice - 1].getId();
-  } else {
-    id = clients[0].getId();
-  }
+  cout << "What client?\n";
+  int choice = getChoice(1, clients.size());
+  id = clients[choice - 1].getId();
   return id;
 }
 
@@ -132,12 +147,12 @@ void Menu::addBreed() {
   }
 }
 
-void Menu::updateBreed() {
+void Menu::changeBreedName() {
   int id = inputBreedId();
   if (id == -1)
     return;
   string name;
-  cout << "Enter name:\n";
+  cout << "Enter new name:\n";
   getline(cin, name);
   try {
     Breed updatedBreed = breedGateway.update(id, name);
@@ -227,23 +242,84 @@ void Menu::addEmployee() {
   }
 }
 
-void Menu::updateEmployee() {
+void Menu::changeEmployeeName() {
   int id = inputEmployeeId();
   if (id == -1)
     return;
   string name;
-  string address;
-  string position;
-  double salary;
-  cout << "Enter name:\n";
+  cout << "Enter new name:\n";
   getline(cin, name);
-  cout << "Enter address:\n";
+  try {
+    Employee oldEmployee = employeeGateway.get(id);
+    string address = oldEmployee.getAddress();
+    string position = oldEmployee.getPosition();
+    double salary = oldEmployee.getSalary();
+    Employee updatedEmployee = employeeGateway.update(id, name, address, position, salary);
+    cout << "Success!\n";
+    printEmployee(updatedEmployee);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
+void Menu::changeEmployeeAddress() {
+  int id = inputEmployeeId();
+  if (id == -1)
+    return;
+  string address;
+  cout << "Enter new address:\n";
   getline(cin, address);
-  cout << "Enter position:\n";
+  try {
+    Employee oldEmployee = employeeGateway.get(id);
+    string name = oldEmployee.getName();
+    string position = oldEmployee.getPosition();
+    double salary = oldEmployee.getSalary();
+    Employee updatedEmployee = employeeGateway.update(id, name, address, position, salary);
+    cout << "Success!\n";
+    printEmployee(updatedEmployee);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
+void Menu::changeEmployeePosition() {
+  int id = inputEmployeeId();
+  if (id == -1)
+    return;
+  string position;
+  cout << "Enter new position:\n";
   getline(cin, position);
-  cout << "Enter salary:\n";
+  try {
+    Employee oldEmployee = employeeGateway.get(id);
+    string name = oldEmployee.getName();
+    string address = oldEmployee.getAddress();
+    double salary = oldEmployee.getSalary();
+    Employee updatedEmployee = employeeGateway.update(id, name, address, position, salary);
+    cout << "Success!\n";
+    printEmployee(updatedEmployee);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
+void Menu::changeEmployeeSalary() {
+  int id = inputEmployeeId();
+  if (id == -1)
+    return;
+  double salary;
+  cout << "Enter new salary:\n";
   cin >> salary;
   try {
+    Employee oldEmployee = employeeGateway.get(id);
+    string name = oldEmployee.getName();
+    string address = oldEmployee.getAddress();
+    string position = oldEmployee.getPosition();
     Employee updatedEmployee = employeeGateway.update(id, name, address, position, salary);
     cout << "Success!\n";
     printEmployee(updatedEmployee);
@@ -322,13 +398,9 @@ int Menu::inputEmployeeId() {
            << ", salary: " << employees[i].getSalary() << "$"
            << "\n";
   }
-  if (employees.size() > 1) {
-    cout << "What employee?\n";
-    int choice = getChoice(1, employees.size());
-    id = employees[choice - 1].getId();
-  } else {
-    id = employees[0].getId();
-  }
+  cout << "What employee?\n";
+  int choice = getChoice(1, employees.size());
+  id = employees[choice - 1].getId();
   return id;
 }
 
@@ -371,7 +443,7 @@ void Menu::addApplication() {
   }
 }
 
-void Menu::updateApplication() {
+void Menu::changeApplicationBreed() {
   int id = inputApplicationId();
   if (id == -1)
     return;
@@ -384,15 +456,40 @@ void Menu::updateApplication() {
     }
     int clientId = oldApplication.getClientId();
     bool completed = oldApplication.getCompleted();
-    int employeeId = inputEmployeeId();
-    if (employeeId == -1)
-      return;
+    int employeeId = oldApplication.getEmployeeId();
     int breedId = inputBreedId();
     if (breedId == -1)
       return;
+    optional<Gender> gender = oldApplication.getGender();
+    tm applicationDate = oldApplication.getApplicationDate();
+    Application updatedApplication = applicationGateway.update(id, clientId, employeeId, breedId, gender, applicationDate, completed);
+    cout << "Success!\n";
+    printApplication(updatedApplication);
+    getchar();
+  } catch(std::exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::changeApplicationGender() {
+  int id = inputApplicationId();
+  if (id == -1)
+    return;
+  try {
+    Application oldApplication = applicationGateway.get(id);
+    if (oldApplication.getCompleted()) {
+      cout << "Cannot update completed application\n";
+      getchar();
+      return;
+    }
+    int clientId = oldApplication.getClientId();
+    bool completed = oldApplication.getCompleted();
+    int employeeId = oldApplication.getEmployeeId();
+    int breedId = oldApplication.getBreedId();
     optional<Gender> gender = inputGender();
-    time_t currentTime = time(nullptr);
-    tm applicationDate = *localtime(&currentTime);
+    tm applicationDate = oldApplication.getApplicationDate();
     Application updatedApplication = applicationGateway.update(id, clientId, employeeId, breedId, gender, applicationDate, completed);
     cout << "Success!\n";
     printApplication(updatedApplication);
@@ -565,13 +662,9 @@ int Menu::inputApplicationId() {
   }
   cout << "Applications:\n";
   printApplications(applications);
-  if (applications.size() > 1) {
-    cout << "Which one?\n";
-    choice = getChoice(1, applications.size());
-    id = applications[choice - 1].getId();
-  } else {
-    id = applications[0].getId();
-  }
+  cout << "Which one?\n";
+  choice = getChoice(1, applications.size());
+  id = applications[choice - 1].getId();
   return id;
 }
 
@@ -587,4 +680,110 @@ optional<Gender> Menu::inputGender() {
   if (answer != "not important")
     gender = answer == "male" ? Gender::male : Gender::female;
   return gender;
+}
+
+// ANIMALS
+
+void Menu::listAnimals() {
+   try {
+    vector<Animal> animals = animalGateway.getAll();
+    cout << "\033[2J\033[H";
+    printAnimals(animals);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
+void Menu::addAnimal() {
+  int choice;
+  string name;
+  cout << "Enter name:\n";
+  getline(cin, name);
+  optional<int> age = inputAge();
+  cout << "Gender:\n1.male\n2.female\n";
+  choice = getChoice(1, 2);
+  Gender gender = choice == 1 ? Gender::male : Gender::female;
+  int breedId = inputBreedId();
+  if (breedId == -1)
+    return;
+  string exterior = inputOptionalString("Exterior description");
+  string pedigree = inputOptionalString("Pedigree");
+  string veterinarian = inputOptionalString("Veterinarian");
+  optional<int> ownerId;
+  cout << "Owner:\n1.Has\n2.Has no\n";
+  choice = getChoice(1, 2);
+  if (choice == 1) {
+    ownerId = inputClientId();
+    if (ownerId == -1)
+      return;
+  }
+  try {
+    Animal animal = animalGateway.create(name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    cout << "Success!\n";
+    printAnimal(animal);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
+void Menu::printAnimal(Animal animal) {
+  string genderStr = animal.getGender() == Gender::male ? "male" : "female";
+  string breedStr = breedGateway.get(animal.getBreedId()).getName();
+  optional<int> ownerId = animal.getOwnerId();
+  string ownerStr = ownerId.has_value() ? clientGateway.get(ownerId.value()).getName() : "";
+  cout << "name: " << animal.getName()
+       << ", age: " << (animal.getAge().has_value() ? to_string(animal.getAge().value()) : "")
+       << ", gender: " << genderStr
+       << ", breed: " << breedStr
+       << ", exterior: " << animal.getExterior()
+       << ", pedigree: " << animal.getPedigree()
+       << ", veterinarian: " << animal.getVeterinarian()
+       << ", owner: " << ownerStr;
+}
+
+void Menu::printAnimals(vector<Animal> animals) {
+  for (int i = 0; i < animals.size(); i++) {
+    string genderStr = animals[i].getGender() == Gender::male ? "male" : "female";
+    string breedStr = breedGateway.get(animals[i].getBreedId()).getName();
+    optional<int> ownerId = animals[i].getOwnerId();
+    string ownerStr = ownerId.has_value() ? clientGateway.get(ownerId.value()).getName() : "";
+    cout << "name: " << animals[i].getName()
+        << ", age: " << (animals[i].getAge().has_value() ? to_string(animals[i].getAge().value()) : "")
+        << ", gender: " << genderStr
+        << ", breed: " << breedStr
+        << ", exterior: " << animals[i].getExterior()
+        << ", pedigree: " << animals[i].getPedigree()
+        << ", veterinarian: " << animals[i].getVeterinarian()
+        << ", owner: " << ownerStr << "\n";
+  }
+}
+
+optional<int> Menu::inputAge() {
+  optional<int> age;
+  int intAge;
+  cout << "Animal age:\n1.known\n2.unknown\n";
+  int choice = getChoice(1, 2);
+  if (choice == 1) {
+    cout << "Enter age:\n";
+    cin >> intAge;
+    age = intAge;
+  }
+  cout << "Age: " << (age.has_value() ? to_string(age.value()) : "no value");
+  getchar();
+  return age;
+}
+
+string Menu::inputOptionalString(string parameter) {
+  string str = "";
+  cout << parameter << ":\n1.Input\n2.Skip\n";
+  int choice = getChoice(1,2);
+  if (choice == 1) {
+    cout << "Enter " << parameter << ":\n";
+    getline(cin, str);
+  }
+  return str;
 }
