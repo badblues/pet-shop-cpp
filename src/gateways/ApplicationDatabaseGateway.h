@@ -7,7 +7,6 @@
 #include <string>
 #include <cstring>
 #include "../models/Application.h"
-#include "../models/Gender.h"
 
 using namespace std;
 
@@ -23,22 +22,22 @@ class ApplicationDatabaseGateway {
       this->hDbc = hDbc;
     }
 
-    Application create(int clientId, int employeeId, int breedId, Gender* gender, tm applicationDate, bool completed) {
+    Application create(int clientId, int employeeId, int breedId, optional<Gender> gender, tm applicationDate, bool completed) {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      string genders_str = "NULL";
-      if (gender != nullptr)
-        genders_str = *gender == Gender::male ? "male" : "female";
-      std::string query = "INSERT INTO applications (client_id, employee_id, breed_id, gender, application_date, completed) VALUES (?, ?, ?, '" + genders_str + "', ?, ?)";
-      SQLCHAR* insertQuery = new SQLCHAR[query.size() + 1];
-      std::strcpy(reinterpret_cast<char*>(insertQuery), query.c_str());
+      SQLCHAR* insertQuery = (SQLCHAR*)"INSERT INTO applications (client_id, employee_id, breed_id, gender, application_date, completed) VALUES (?, ?, ?, ?, ?, ?)";
       SQLPrepare(hStmt, insertQuery, SQL_NTS);
 
       // Задайте параметры для вставки
       SQLINTEGER sqlClientId = static_cast<int>(clientId);
       SQLINTEGER sqlEmployeeId = static_cast<int>(employeeId);
       SQLINTEGER sqlBreedId = static_cast<int>(breedId);
+      SQLCHAR* sqlGender = nullptr;
+      if (gender.has_value()) {
+        string strGender = getGenderString(gender.value());
+        sqlGender = (SQLCHAR*)(reinterpret_cast<const SQLCHAR*>(strGender.c_str()));
+      }
       const char* dateString = getDateString(applicationDate).c_str();
       SQLCHAR* sqlApplicationDate = const_cast<SQLCHAR*>(reinterpret_cast<const SQLCHAR*>(dateString));
       SQLINTEGER sqlCompleted = completed ? 1 : 0;
@@ -46,8 +45,9 @@ class ApplicationDatabaseGateway {
       SQLBindParameter(hStmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &sqlClientId, 0, NULL);
       SQLBindParameter(hStmt, 2, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &sqlEmployeeId, 0, NULL);
       SQLBindParameter(hStmt, 3, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &sqlBreedId, 0, NULL);
-      SQLBindParameter(hStmt, 4, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, sqlApplicationDate, 0, NULL);
-      SQLBindParameter(hStmt, 5, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &sqlCompleted, 0, NULL);
+      SQLBindParameter(hStmt, 4, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, sqlGender, 0, NULL);
+      SQLBindParameter(hStmt, 5, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, sqlApplicationDate, 0, NULL);
+      SQLBindParameter(hStmt, 6, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &sqlCompleted, 0, NULL);
       
       if (SQLExecute(hStmt) != SQL_SUCCESS) {
         SQLCHAR sqlState[6];
@@ -209,19 +209,13 @@ class ApplicationDatabaseGateway {
       SQLBindCol(hStmt, 7, SQL_C_SLONG, &sqlCompleted, sizeof(sqlCompleted), NULL);
 
       // Извлекаем данные из результирующего набора
-      cout << "aboba\n";
-      getchar();
       while (SQLFetch(hStmt) == SQL_SUCCESS) {
-        cout << "success\n";
-        getchar();
-        Gender* gender = nullptr;
+        optional<Gender> gender;
         if (sqlGender[0] != '\0')
           gender = getGender(reinterpret_cast<char*>(sqlGender));
         tm date = getDate(reinterpret_cast<char*>(sqlApplicationDate));
         bool completed = sqlCompleted == 1;
         Application application = Application(id, clientId, employeeId, breedId, gender, date, completed);
-        cout << application.toString() << "\n";
-        getchar();
         applications.push_back(application);
       }
 
@@ -240,8 +234,6 @@ class ApplicationDatabaseGateway {
       }
 
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
-      cout << "aboba " << applications.size();
-      getchar();
       return applications;
     }
 
@@ -311,27 +303,10 @@ class ApplicationDatabaseGateway {
   private:
     SQLHDBC hDbc;
 
-    string getGenderString(Gender gender) {
-      if (gender == Gender::male)
-        return "male";
-      else
-        return "female";
-    }
-
     string getDateString(tm date) {
       stringstream dateStream;
       dateStream << put_time(&date, "%Y-%m-%d");
       return dateStream.str();
-    }
-
-    Gender* getGender(string gender) {
-      cout << "gender: " << gender << "\n";
-      if (gender == "male")
-        return new Gender(Gender::male);
-      else if (gender == "female")
-        return new Gender(Gender::female);
-      else
-        throw runtime_error("Invalid argument");
     }
 
     tm getDate(string dateStr) {
@@ -342,5 +317,13 @@ class ApplicationDatabaseGateway {
           throw std::invalid_argument("Invalid date string");
       }
       return date;
+    }
+
+    string getGenderString(Gender gender) {
+      return gender == Gender::male ? "male" : "female";
+    }
+
+    Gender getGender(string gender) {
+      return gender == "male" ? Gender::male : Gender::female;
     }
 };

@@ -316,17 +316,15 @@ int Menu::inputEmployeeId() {
 void Menu::printApplications() {
   try {
     vector<Application> applications = applicationGateway.getAll();
-    cout << "got applications\n";
-    getchar();
     cout << "\033[2J\033[H";
     for (int i = 0; i < applications.size(); i++) {
       string clientName = clientGateway.get(applications[i].getClientId()).getName();
       string employeeName = employeeGateway.get(applications[i].getEmployeeId()).getName();
       string breed = breedGateway.get(applications[i].getBreedId()).getName();
-      string genderStr = "null";
-      Gender* gender = applications[i].getGender();
-      if (gender != nullptr)
-        genderStr = *gender == Gender::male ? "male" : "female";
+      string genderStr = "";
+      optional<Gender> gender = applications[i].getGender();
+      if (gender.has_value())
+        genderStr = gender.value() == Gender::male ? "male" : "female";
       tm applicationDate = applications[i].getApplicationDate();
       stringstream dateStream;
       dateStream << std::put_time(&applicationDate, "%Y-%m-%d");
@@ -355,7 +353,7 @@ void Menu::addApplication() {
   int breedId = inputBreedId();
   if (breedId == -1)
     return;
-  Gender* gender = inputGender();
+  optional<Gender> gender = inputGender();
   time_t currentTime = time(nullptr);
   tm applicationDate = *localtime(&currentTime);
 
@@ -364,10 +362,10 @@ void Menu::addApplication() {
     string clientName = clientGateway.get(application.getClientId()).getName();
     string employeeName = employeeGateway.get(application.getEmployeeId()).getName();
     string breed = breedGateway.get(application.getBreedId()).getName();
-    string genderStr = "null";
-    Gender* gender = application.getGender();
-    if (gender != nullptr)
-      genderStr = *gender == Gender::male ? "male" : "female";
+    string genderStr = "";
+    optional<Gender> gender = application.getGender();
+    if (gender.has_value())
+        genderStr = gender.value() == Gender::male ? "male" : "female";
     tm applicationDate = application.getApplicationDate();
     stringstream dateStream;
     dateStream << std::put_time(&applicationDate, "%Y-%m-%d");
@@ -385,7 +383,7 @@ void Menu::addApplication() {
   }
 }
 
-Gender* Menu::inputGender() {
+optional<Gender> Menu::inputGender() {
   string answer;
   cout << "Enter gender: (male/female/not important)\n";
   getline(cin, answer);
@@ -393,7 +391,8 @@ Gender* Menu::inputGender() {
     cout << "Invalid input, try again:\n";
     getline(cin, answer);
   }
-  if (answer == "not important")
-    return nullptr;
-  return answer == "male" ? new Gender(Gender::male) : new Gender(Gender::female);
+  optional<Gender> gender;
+  if (answer != "not important")
+    gender = answer == "male" ? Gender::male : Gender::female;
+  return gender;
 }

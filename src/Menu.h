@@ -202,5 +202,5 @@ class Menu {
     void printApplications();
     void addApplication();
 
-    Gender* inputGender();
+    optional<Gender> inputGender();
 };

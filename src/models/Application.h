@@ -3,13 +3,14 @@
 #include <sstream>
 #include <ctime>
 #include <iomanip>
+#include <optional>
 #include "Gender.h"
 
 class Application {
 
   public:
 
-    Application(int id, int clientId, int employeeId, int breedId, Gender* gender, tm applicationDate, bool completed) {
+    Application(int id, int clientId, int employeeId, int breedId, optional<Gender> gender, tm applicationDate, bool completed) {
       this->id = id;
       this->clientId = clientId;
       this->employeeId = employeeId;
@@ -21,11 +22,11 @@ class Application {
 
     string toString() {
       ostringstream oss;
-      string genderStr = "nullptr";
-      if (gender != nullptr)
-        genderStr = *gender == Gender::male ? "male" : "female";
+      string genderStr = "";
+      if (gender.has_value())
+        genderStr = gender.value() == Gender::male ? "male" : "female";
       stringstream dateStream;
-      dateStream << std::put_time(&applicationDate, "%Y-%m-%d");
+      dateStream << put_time(&applicationDate, "%Y-%m-%d");
       oss << "[id = " << id <<
               "; clientId = " << clientId <<
               "; employeeId = " << employeeId <<
@@ -64,15 +65,15 @@ class Application {
       this->breedId = breedId;
     }
 
-    Gender* getGender() {
+    optional<Gender> getGender() {
       return gender;
     }
 
-    void setGender(Gender* gender) {
+    void setGender(optional<Gender> gender) {
       this->gender = gender;
     }
 
-    std::tm getApplicationDate() {
+    tm getApplicationDate() {
       return applicationDate;
     }
 
@@ -93,8 +94,8 @@ class Application {
     int clientId;
     int employeeId;
     int breedId;
-    Gender* gender;
-    std::tm applicationDate;
+    optional<Gender> gender;
+    tm applicationDate;
     bool completed;
     
 };

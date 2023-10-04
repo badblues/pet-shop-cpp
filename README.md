@@ -28,7 +28,7 @@ TODO:
     - изменение данных клиента *
     - удаление клиента *
     - поиск клиента по имени *
-    - просмотр заявок
+    - просмотр заявок *
     - подача заявки *
     - изменение заявки
     - завершение заявки (присоединение животного к клиенту)
@@ -53,15 +53,12 @@ TODO:
     - удаление сотрудника *
     - поиск по имени, должности *
 
-
-CREATE TYPE Genders AS ENUM ('male', 'female');
-
 CREATE TABLE Applications (
   id SERIAL PRIMARY KEY,
   client_id INT NOT NULL REFERENCES clients(id),
   employee_id INT NOT NULL REFERENCES employees(id),
   breed_id INT NOT NULL REFERENCES breeds(id),
-  gender Genders,
+  gender varchar(255),
   application_date DATE NOT NULL,
   completed BOOLEAN NOT NULL
 );
