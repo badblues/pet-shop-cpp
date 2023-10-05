@@ -322,6 +322,8 @@ class Menu {
       }
     }
 
+  void createTables();
+
   private:
     SQLHDBC hDbc;
     ClientDatabaseGateway clientGateway;

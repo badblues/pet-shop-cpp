@@ -6,9 +6,14 @@
 
 TODO:
   - создание таблиц из кода (не забыть про not null поля)
-  - сортировка заявок по дате
 
 
+
+-- Create table Breeds
+CREATE TABLE Breeds (
+  id serial PRIMARY KEY,
+  name varchar(255) NOT NULL
+);
 
 -- Create table Employees
 CREATE TABLE Employees (
@@ -17,6 +22,13 @@ CREATE TABLE Employees (
   address varchar(255) NOT NULL,
   position varchar(255) NOT NULL,
   salary decimal(10, 2) NOT NULL
+);
+
+-- Create table Clients
+CREATE TABLE Clients (
+  id serial PRIMARY KEY,
+  name varchar(255) NOT NULL,
+  address varchar(255) NOT NULL
 );
 
 -- Create table Animals
@@ -32,12 +44,7 @@ CREATE TABLE Animals (
   owner_id int REFERENCES Clients(id)
 );
 
--- Create table Clients
-CREATE TABLE Clients (
-  id serial PRIMARY KEY,
-  name varchar(255) NOT NULL,
-  address varchar(255) NOT NULL
-);
+
 
 -- Create table Applications
 CREATE TABLE Applications (
@@ -51,7 +58,7 @@ CREATE TABLE Applications (
 );
 
 -- Create table Competitions
-CREATE TABLE Competitions (
+CREATE TABLE IF NOT EXISTS Competitions (
   id serial PRIMARY KEY,
   animal_id int REFERENCES Animals(id) NOT NULL,
   name varchar(255) NOT NULL,
@@ -60,9 +67,4 @@ CREATE TABLE Competitions (
   award varchar(255) NOT NULL
 );
 
--- Create table Breeds
-CREATE TABLE Breeds (
-  id serial PRIMARY KEY,
-  name varchar(255) NOT NULL
-);
 
