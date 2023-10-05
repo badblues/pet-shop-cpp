@@ -8,6 +8,7 @@
 #include "./gateways/EmployeeDatabaseGateway.h"
 #include "./gateways/ApplicationDatabaseGateway.h"
 #include "./gateways/AnimalDatabaseGateway.h"
+#include "./gateways/CompetitionDatabaseGateway.h"
 
 using namespace std;
 
@@ -22,6 +23,7 @@ class Menu {
       this->employeeGateway = EmployeeDatabaseGateway(hDbc);
       this->applicationGateway = ApplicationDatabaseGateway(hDbc);
       this->animalGateway = AnimalDatabaseGateway(hDbc);
+      this->competitionGateway = CompetitionDatabaseGateway(hDbc);
     }
 
     void showMenu() {
@@ -35,8 +37,9 @@ class Menu {
                 "3. To employees base\n" <<
                 "4. To applications\n" <<
                 "5. To animals\n" <<
+                "6. To competitions\n" <<
                 "0. Exit\n";
-        choice = getChoice(0, 5);
+        choice = getChoice(0, 6);
         switch(choice){
           case 1:  //clients menu
             while(innerMenuRunning) {
@@ -259,6 +262,59 @@ class Menu {
               }
             }
             break;
+          case 6:
+            while(innerMenuRunning) {
+              cout << "\033[2J\033[H";
+              cout << "Competitions menu:\n" << 
+                      "1. List competitions\n" <<
+                      "2. New competition\n" <<
+                      "3. Change competition name\n" <<
+                      "4. Change competition location\n" <<
+                      "5. Change competition date\n" <<
+                      "6. Change competition award\n" <<
+                      "7. Delete competition\n" <<
+                      "8. Find by animal\n" <<
+                      "9. Find by award\n" <<
+                      "10. Find by name\n" <<
+                      "0. Back\n";
+              choice = getChoice(0, 10);
+              switch(choice) {
+                case 1:
+                  listCompetitions();
+                  break;
+                case 2:
+                  addCompetition();
+                  break;
+                case 3:
+                  changeCompetitionName();
+                  break;
+                case 4:
+                  changeCompetitionLocation();
+                  break;
+                case 5:
+                  changeCompetitionDate();
+                  break;
+                case 6:
+                  changeCompetitionAward();
+                  break;
+                case 7:
+                  removeCompetition();
+                  break;
+                case 8:
+                  findCompetitionByAnimal();
+                  break;
+                case 9:
+                  findCompetitionByAward();
+                  break;
+                case 10:
+                  findCompetitionByName();
+                  break;
+                case 0:
+                  innerMenuRunning = false;
+                  break;
+              }
+            }
+            break;
           case 0:
             menuRunning = false;
             break;
@@ -273,6 +329,7 @@ class Menu {
     EmployeeDatabaseGateway employeeGateway;
     ApplicationDatabaseGateway applicationGateway;
     AnimalDatabaseGateway animalGateway;
+    CompetitionDatabaseGateway competitionGateway;
     bool menuRunning = true;
     bool innerMenuRunning = true;
 
@@ -343,10 +400,25 @@ class Menu {
     void removeAnimal();
     void listAnimalsByBreed();
     void listAnimalsByOwner();
-    void printAnimal(Animal animal);
     void printAnimals(vector<Animal> animals);
+    void printAnimal(Animal animal);
     optional<int> inputAge();
     string inputOptionalString(string parameter);
     int inputAnimalId();
+
+    void listCompetitions();
+    void addCompetition();
+    void changeCompetitionName();
+    void changeCompetitionLocation();
+    void changeCompetitionDate();
+    void changeCompetitionAward();
+    void removeCompetition();
+    void findCompetitionByAnimal();
+    void findCompetitionByAward();
+    void findCompetitionByName();
+    void printCompetitions(vector<Competition> competitions);
+    void printCompetition(Competition competition);
+    int inputCompetitionId();
+    optional<tm> inputDate();
 };
 

@@ -5,51 +5,63 @@
 - операции в соответствии с семантикой варианта, без привязки к реляционной модели
 
 TODO:
-  создание таблиц из кода (не забыть про not null поля)
-  модели:
-    - client *
-    - animal *
-    - application *
-    - breed *
-    - employee *
-    - competition
-  шлюзы:
-    - client *
-    - animal
-    - application *
-    - breed *
-    - employee *
-    - competition
-  меню:
+  - создание таблиц из кода (не забыть про not null поля)
+  - сортировка заявок по дате
+  - удаление связанных данных
 
-  функции меню:
-    - изменение животного
-    - удаление животного
-    - поиск по породе, полу и т.п.
-    - добавление соревнования
-    - просмотр соревнования животного
-    - изменение соревнования
-    - удаление соревнования
 
-CREATE TABLE Applications (
-  id SERIAL PRIMARY KEY,
-  client_id INT NOT NULL REFERENCES clients(id),
-  employee_id INT NOT NULL REFERENCES employees(id),
-  breed_id INT NOT NULL REFERENCES breeds(id),
-  gender varchar(255),
-  application_date DATE NOT NULL,
-  completed BOOLEAN NOT NULL
+-- Create table Employees
+CREATE TABLE Employees (
+  id serial PRIMARY KEY,
+  name varchar(255) NOT NULL,
+  address varchar(255) NOT NULL,
+  position varchar(255) NOT NULL,
+  salary decimal(10, 2) NOT NULL
 );
 
-
+-- Create table Animals
 CREATE TABLE Animals (
   id serial PRIMARY KEY,
   name varchar(255) NOT NULL,
   age int,
   gender varchar(255) NOT NULL,
-  breed_id int REFERENCES breeds(id) NOT NULL,
-  exterior_description varchar(255) NOT NULL,
-  pedigree varchar(255) NOT NULL,
+  breed_id int REFERENCES Breed(id) NOT NULL,
+  exterior_description text NOT NULL,
+  pedigree text NOT NULL,
   veterinarian varchar(255) NOT NULL,
-  owner_id int REFERENCES clients(id)
+  owner_id int REFERENCES Clients(id)
+);
+
+-- Create table Clients
+CREATE TABLE Clients (
+  id serial PRIMARY KEY,
+  name varchar(255) NOT NULL,
+  address varchar(255) NOT NULL
+);
+
+-- Create table Applications
+CREATE TABLE Applications (
+  id serial PRIMARY KEY,
+  client_id int REFERENCES Clients(id) NOT NULL,
+  employee_id int REFERENCES Employees(id) NOT NULL,
+  breed_id int REFERENCES Breed(id) NOT NULL,
+  gender varchar(255),
+  application_date date NOT NULL,
+  completed boolean NOT NULL
+);
+
+-- Create table Competitions
+CREATE TABLE Competitions (
+  id serial PRIMARY KEY,
+  animal_id int REFERENCES Animals(id) NOT NULL,
+  name varchar(255) NOT NULL,
+  location varchar(255) NOT NULL,
+  date date NOT NULL,
+  award varchar(255) NOT NULL
+);
+
+-- Create table Breed
+CREATE TABLE Breed (
+  id serial PRIMARY KEY,
+  name varchar(255) NOT NULL
 );

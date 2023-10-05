@@ -41,8 +41,8 @@ class ClientDatabaseGateway {
           SQLGetDiagRec(SQL_HANDLE_STMT, hStmt, 1, sqlState, &nativeError, errorMsg, SQL_MAX_MESSAGE_LENGTH, &errorMsgLen);
 
           // Construct a runtime_error with the PostgreSQL error message
-          std::string errorMessage = "PostgreSQL Error [" + std::string(reinterpret_cast<char*>(sqlState)) + "]: " + std::string(reinterpret_cast<char*>(errorMsg));
-          throw std::runtime_error(errorMessage);
+          string errorMessage = "PostgreSQL Error [" + string(reinterpret_cast<char*>(sqlState)) + "]: " + string(reinterpret_cast<char*>(errorMsg));
+          throw runtime_error(errorMessage);
         }
 
         SQLINTEGER id;
@@ -72,8 +72,8 @@ class ClientDatabaseGateway {
         SQLGetDiagRec(SQL_HANDLE_STMT, hStmt, 1, sqlState, &nativeError, errorMsg, SQL_MAX_MESSAGE_LENGTH, &errorMsgLen);
 
         // Construct a runtime_error with the PostgreSQL error message
-        std::string errorMessage = "PostgreSQL Error [" + std::string(reinterpret_cast<char*>(sqlState)) + "]: " + std::string(reinterpret_cast<char*>(errorMsg));
-        throw std::runtime_error(errorMessage);
+        string errorMessage = "PostgreSQL Error [" + string(reinterpret_cast<char*>(sqlState)) + "]: " + string(reinterpret_cast<char*>(errorMsg));
+        throw runtime_error(errorMessage);
       } 
 
       SQLCHAR name[256];
@@ -85,8 +85,8 @@ class ClientDatabaseGateway {
 
       // Извлекаем данные из результирующего набора
       SQLFetch(hStmt);
-      std::string strName(reinterpret_cast<char*>(name));
-      std::string strAddress(reinterpret_cast<char*>(address));
+      string strName(reinterpret_cast<char*>(name));
+      string strAddress(reinterpret_cast<char*>(address));
 
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
 
@@ -112,8 +112,8 @@ class ClientDatabaseGateway {
         SQLGetDiagRec(SQL_HANDLE_STMT, hStmt, 1, sqlState, &nativeError, errorMsg, SQL_MAX_MESSAGE_LENGTH, &errorMsgLen);
 
         // Construct a runtime_error with the PostgreSQL error message
-        std::string errorMessage = "PostgreSQL Error [" + std::string(reinterpret_cast<char*>(sqlState)) + "]: " + std::string(reinterpret_cast<char*>(errorMsg));
-        throw std::runtime_error(errorMessage);
+        string errorMessage = "PostgreSQL Error [" + string(reinterpret_cast<char*>(sqlState)) + "]: " + string(reinterpret_cast<char*>(errorMsg));
+        throw runtime_error(errorMessage);
       } 
 
       vector<Client> clients;
@@ -129,8 +129,8 @@ class ClientDatabaseGateway {
 
       // Извлекаем данные из результирующего набора
       while(SQLFetch(hStmt) == SQL_SUCCESS) {
-        std::string strName(reinterpret_cast<char*>(sdlName));
-        std::string strAddress(reinterpret_cast<char*>(address));
+        string strName(reinterpret_cast<char*>(sdlName));
+        string strAddress(reinterpret_cast<char*>(address));
         Client client = Client(id, strName, strAddress);
         clients.push_back(client);
       }
@@ -157,8 +157,8 @@ class ClientDatabaseGateway {
         SQLGetDiagRec(SQL_HANDLE_STMT, hStmt, 1, sqlState, &nativeError, errorMsg, SQL_MAX_MESSAGE_LENGTH, &errorMsgLen);
 
         // Construct a runtime_error with the PostgreSQL error message
-        std::string errorMessage = "PostgreSQL Error [" + std::string(reinterpret_cast<char*>(sqlState)) + "]: " + std::string(reinterpret_cast<char*>(errorMsg));
-        throw std::runtime_error(errorMessage);
+        string errorMessage = "PostgreSQL Error [" + string(reinterpret_cast<char*>(sqlState)) + "]: " + string(reinterpret_cast<char*>(errorMsg));
+        throw runtime_error(errorMessage);
       } 
 
       vector<Client> clients;
@@ -174,8 +174,8 @@ class ClientDatabaseGateway {
 
       // Извлекаем данные из результирующего набора
       while (SQLFetch(hStmt) == SQL_SUCCESS) {
-        std::string strName(reinterpret_cast<char*>(name));
-        std::string strAddress(reinterpret_cast<char*>(address));
+        string strName(reinterpret_cast<char*>(name));
+        string strAddress(reinterpret_cast<char*>(address));
         Client client = Client(id, strName, strAddress);
         clients.push_back(client);
       }
@@ -207,8 +207,8 @@ class ClientDatabaseGateway {
         SQLGetDiagRec(SQL_HANDLE_STMT, hStmt, 1, sqlState, &nativeError, errorMsg, SQL_MAX_MESSAGE_LENGTH, &errorMsgLen);
 
         // Construct a runtime_error with the PostgreSQL error message
-        std::string errorMessage = "PostgreSQL Error [" + std::string(reinterpret_cast<char*>(sqlState)) + "]: " + std::string(reinterpret_cast<char*>(errorMsg));
-        throw std::runtime_error(errorMessage);
+        string errorMessage = "PostgreSQL Error [" + string(reinterpret_cast<char*>(sqlState)) + "]: " + string(reinterpret_cast<char*>(errorMsg));
+        throw runtime_error(errorMessage);
       } 
 
 
@@ -235,8 +235,8 @@ class ClientDatabaseGateway {
         SQLGetDiagRec(SQL_HANDLE_STMT, hStmt, 1, sqlState, &nativeError, errorMsg, SQL_MAX_MESSAGE_LENGTH, &errorMsgLen);
 
         // Construct a runtime_error with the PostgreSQL error message
-        std::string errorMessage = "PostgreSQL Error [" + std::string(reinterpret_cast<char*>(sqlState)) + "]: " + std::string(reinterpret_cast<char*>(errorMsg));
-        throw std::runtime_error(errorMessage);
+        string errorMessage = "PostgreSQL Error [" + string(reinterpret_cast<char*>(sqlState)) + "]: " + string(reinterpret_cast<char*>(errorMsg));
+        throw runtime_error(errorMessage);
       } 
 
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);

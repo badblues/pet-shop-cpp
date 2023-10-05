@@ -38,15 +38,15 @@ class Animal {
       return oss.str();
     }
 
-    int getId() const {
+    int getId() {
         return id;
     }
 
-    void setId(int value) {
-        id = value;
+    void setId(int id) {
+        this->id = id;
     }
 
-    const string getName() const {
+    string getName() {
         return name;
     }
 
@@ -54,60 +54,60 @@ class Animal {
         this->name = name;
     }
 
-    optional<int> getAge() const {
+    optional<int> getAge() {
         return age;
     }
 
-    void setAge(const optional<int>& value) {
-        age = value;
+    void setAge(optional<int> age) {
+        this->age = age;
     }
 
-    Gender getGender() const {
+    Gender getGender() {
         return gender;
     }
 
-    void setGender(Gender value) {
-        gender = value;
+    void setGender(Gender gender) {
+        this->gender = gender;
     }
 
-    int getBreedId() const {
+    int getBreedId() {
         return breedId;
     }
 
-    void setBreedId(int value) {
-        breedId = value;
+    void setBreedId(int breedId) {
+        this->breedId = breedId;
     }
 
-    string getExterior() const {
+    string getExterior() {
         return exterior;
     }
 
-    void setExterior(const string& value) {
-        exterior = value;
+    void setExterior(string exterior) {
+        this->exterior = exterior;
     }
 
-    string getPedigree() const {
+    string getPedigree() {
         return pedigree;
     }
 
-    void setPedigree(const string& value) {
-        pedigree = value;
+    void setPedigree (string pedigree) {
+        this->pedigree = pedigree;
     }
 
-    string getVeterinarian() const {
+    string getVeterinarian() {
         return veterinarian;
     }
 
-    void setVeterinarian(const string& value) {
-        veterinarian = value;
+    void setVeterinarian(string veterinarian) {
+        this->veterinarian = veterinarian;
     }
 
-    optional<int> getOwnerId() const {
+    optional<int> getOwnerId() {
         return ownerId;
     }
 
-    void setOwnerId(const optional<int>& value) {
-        ownerId = value;
+    void setOwnerId(optional<int> ownerId) {
+        this->ownerId = ownerId;
     }
 
   private:

@@ -466,7 +466,7 @@ void Menu::changeApplicationBreed() {
     cout << "Success!\n";
     printApplication(updatedApplication);
     getchar();
-  } catch(std::exception& e) {
+  } catch(exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
@@ -494,7 +494,7 @@ void Menu::changeApplicationGender() {
     cout << "Success!\n";
     printApplication(updatedApplication);
     getchar();
-  } catch(std::exception& e) {
+  } catch(exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
@@ -521,7 +521,7 @@ void Menu::closeApplication() {
     cout << "Success!\n";
     printApplication(updatedApplication);
     getchar();
-  } catch(std::exception& e) {
+  } catch(exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
@@ -536,7 +536,7 @@ void Menu::removeApplication() {
     applicationGateway.remove(id);
     cout << "Success!\n";
     getchar();
-  } catch(std::exception& e) {
+  } catch(exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
@@ -594,7 +594,7 @@ void Menu::printApplications(vector<Application> applications) {
       genderStr = gender.value() == Gender::male ? "male" : "female";
     tm applicationDate = applications[i].getApplicationDate();
     stringstream dateStream;
-    dateStream << std::put_time(&applicationDate, "%Y-%m-%d");
+    dateStream << put_time(&applicationDate, "%Y-%m-%d");
     cout << i + 1 << ". client: " << clientName
           << ", employee: " << employeeName
           << ", breed: " << breed
@@ -615,7 +615,7 @@ void Menu::printApplication(Application application) {
       genderStr = gender.value() == Gender::male ? "male" : "female";
   tm applicationDate = application.getApplicationDate();
   stringstream dateStream;
-  dateStream << std::put_time(&applicationDate, "%Y-%m-%d");
+  dateStream << put_time(&applicationDate, "%Y-%m-%d");
   cout  << "client name: " << clientName
         << ", employee: " << employeeName
         << ", breed: " << breed
@@ -655,7 +655,7 @@ int Menu::inputApplicationId() {
     }
     if (id == -1)
       return -1;
-  } catch (std::exception& e) {
+  } catch (exception& e) {
     cout << e.what() << "\n";
     getchar();
     return -1;
@@ -759,7 +759,7 @@ void Menu::changeAnimalName() {
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
-  } catch (std::exception& e) {
+  } catch (exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
@@ -786,7 +786,7 @@ void Menu::changeAnimalAge() {
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
-  } catch (std::exception& e) {
+  } catch (exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
@@ -817,7 +817,7 @@ void Menu::changeAnimalGender() {
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
-  } catch (std::exception& e) {
+  } catch (exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
@@ -846,7 +846,7 @@ void Menu::changeAnimalBreed() {
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
-  } catch (std::exception& e) {
+  } catch (exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
@@ -875,7 +875,7 @@ int id = inputAnimalId();
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
-  } catch (std::exception& e) {
+  } catch (exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
@@ -904,7 +904,7 @@ void Menu::changeAnimalPedigree() {
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
-  } catch (std::exception& e) {
+  } catch (exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
@@ -933,7 +933,7 @@ void Menu::changeAnimalVeterinarian() {
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
-  } catch (std::exception& e) {
+  } catch (exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
@@ -967,7 +967,7 @@ void Menu::changeAnimalOwner() {
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
-  } catch (std::exception& e) {
+  } catch (exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
@@ -983,7 +983,7 @@ void Menu::removeAnimal() {
     cout << "Success!\n";
     getchar();
     return;
-  } catch (std::exception& e) {
+  } catch (exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
@@ -1112,7 +1112,7 @@ int Menu::inputAnimalId() {
     }
     if (id == -1)
       return -1;
-  } catch (std::exception& e) {
+  } catch (exception& e) {
     cout << e.what() << "\n";
     getchar();
     return -1;
@@ -1128,4 +1128,295 @@ int Menu::inputAnimalId() {
   choice = getChoice(1, animals.size());
   id = animals[choice - 1].getId();
   return id;
+}
+
+//Competitions
+
+void Menu::listCompetitions() {
+  try {
+    vector<Competition> competition = competitionGateway.getAll();
+    cout << "\033[2J\033[H";
+    printCompetitions(competition);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
+void Menu::addCompetition() {
+  int animalId = inputAnimalId();
+  if (animalId == -1)
+    return;
+  string name;
+  cout << "Enter name of the competition:\n";
+  getline(cin, name);
+  string location;
+  cout << "Enter location of the competition:\n";
+  getline(cin, location);
+  optional<tm> date = inputDate();
+  if (!date.has_value())
+    return;
+  string award;
+  cout << "Enter award of the animal:\n";
+  getline(cin, award);
+  try {
+    Competition competitions = competitionGateway.create(animalId, name, location, date.value(), award);
+    cout << "Success!\n";
+    printCompetition(competitions);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  } 
+}
+
+void Menu::changeCompetitionName() {
+  int id = inputCompetitionId();
+  if (id == -1)
+    return;
+  try {
+    string name;
+    cout << "Enter name of the competition:\n";
+    getline(cin, name);
+    Competition oldCompetition = competitionGateway.get(id);
+    int animalId = oldCompetition.getAnimalId();
+    string location = oldCompetition.getLocation();
+    tm date = oldCompetition.getDate();
+    string award = oldCompetition.getAward();
+    Competition updatedCompetition = competitionGateway.update(id, animalId, name, location, date, award);
+    cout << "Success!\n";
+    printCompetition(updatedCompetition);
+    getchar();
+  } catch(exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::changeCompetitionLocation() {
+  int id = inputCompetitionId();
+  if (id == -1)
+    return;
+  try {
+    string location;
+    cout << "Enter location of the competition:\n";
+    getline(cin, location);
+    Competition oldCompetition = competitionGateway.get(id);
+    int animalId = oldCompetition.getAnimalId();
+    string name = oldCompetition.getName();
+    tm date = oldCompetition.getDate();
+    string award = oldCompetition.getAward();
+    Competition updatedCompetition = competitionGateway.update(id, animalId, name, location, date, award);
+    cout << "Success!\n";
+    printCompetition(updatedCompetition);
+    getchar();
+  } catch(exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::changeCompetitionDate() {
+  int id = inputCompetitionId();
+  if (id == -1)
+    return;
+  try {
+    optional<tm> date = inputDate();
+    if (!date.has_value())
+      return;
+    Competition oldCompetition = competitionGateway.get(id);
+    int animalId = oldCompetition.getAnimalId();
+    string name = oldCompetition.getName();
+    string location = oldCompetition.getLocation();
+    string award = oldCompetition.getAward();
+    Competition updatedCompetition = competitionGateway.update(id, animalId, name, location, date.value(), award);
+    cout << "Success!\n";
+    printCompetition(updatedCompetition);
+    getchar();
+  } catch(exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::changeCompetitionAward() {
+  int id = inputCompetitionId();
+  if (id == -1)
+    return;
+  try {
+    string award;
+    cout << "Enter award of the animal:\n";
+    getline(cin, award);
+    Competition oldCompetition = competitionGateway.get(id);
+    int animalId = oldCompetition.getAnimalId();
+    string name = oldCompetition.getName();
+    string location = oldCompetition.getLocation();
+    tm date = oldCompetition.getDate();
+    Competition updatedCompetition = competitionGateway.update(id, animalId, name, location, date, award);
+    cout << "Success!\n";
+    printCompetition(updatedCompetition);
+    getchar();
+  } catch(exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+void Menu::removeCompetition() {
+  int id = inputCompetitionId();
+  if (id == -1)
+    return;
+  try {
+    competitionGateway.remove(id);
+    cout << "Success!\n";
+    getchar();
+  } catch(exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::findCompetitionByAnimal() {
+  int animalId = inputAnimalId();
+  if (animalId == -1)
+    return;
+  try {
+    vector<Competition> competitions = competitionGateway.findByAnimal(animalId);
+    cout << "\033[2J\033[H";
+    cout << "Competitions:\n";
+    printCompetitions(competitions);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
+void Menu::findCompetitionByAward() {
+  string award;
+  cout << "Enter award:\n";
+  getline(cin, award);
+  try {
+    vector<Competition> competitions = competitionGateway.findByAward(award);
+    cout << "\033[2J\033[H";
+    cout << "Competitions:\n";
+    printCompetitions(competitions);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
+void Menu::findCompetitionByName() {
+  string name;
+  cout << "Enter name:\n";
+  getline(cin, name);
+  try {
+    vector<Competition> competitions = competitionGateway.findByName(name);
+    cout << "\033[2J\033[H";
+    cout << "Competitions:\n";
+    printCompetitions(competitions);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
+void Menu::printCompetitions(vector<Competition> competitions) {
+  for (int i = 0; i < competitions.size(); i++) {
+    stringstream dateStream;
+    tm date = competitions[i].getDate();
+    dateStream << put_time(&date, "%Y-%m-%d");
+    Animal animal = animalGateway.get(competitions[i].getAnimalId());
+    Breed breed = breedGateway.get(animal.getBreedId());
+    cout << i + 1 << ". animal name = " << animal.getName() <<
+            ", animal breed = " << breed.getName() <<
+            ", competition name = " << competitions[i].getName() <<
+            ", location = " << competitions[i].getLocation() <<
+            ", date = " << dateStream.str() <<
+            ", award = " << competitions[i].getAward() << "\n";
+  }
+}
+
+void Menu::printCompetition(Competition competition) {
+  stringstream dateStream;
+  tm date = competition.getDate();
+  dateStream << put_time(&date, "%Y-%m-%d");
+  Animal animal = animalGateway.get(competition.getAnimalId());
+  Breed breed = breedGateway.get(animal.getBreedId());
+  cout << "animal name = " << animal.getName() <<
+          ", animal breed = " << breed.getName() <<
+          ", competition name = " << competition.getName() <<
+          ", location = " << competition.getLocation() <<
+          ", date = " << dateStream.str() <<
+          ", award = " << competition.getAward() << "\n";
+}
+
+int Menu::inputCompetitionId() {
+  cout << "Find competition by:\n"
+       << "1. Animal\n"
+       << "2. Name\n"
+       << "0. Go back\n";
+
+  int choice = getChoice(0, 2);
+  int id;
+  string name;
+  vector<Competition> competitions;
+  try {
+    switch(choice) {
+      case 1:
+        id = inputAnimalId();
+        competitions = competitionGateway.findByAnimal(id);
+        break;
+      case 2:
+        name;
+        cout << "Enter name:\n";
+        getline(cin, name);
+        competitions = competitionGateway.findByName(name);
+        break;
+      case 0:
+        return -1;
+        break;
+    }
+    if (id == -1)
+      return -1;
+  } catch (exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return -1;
+  }
+  if (competitions.size() == 0) {
+    cout << "Competitions not found\n";
+    getchar();
+    return -1;
+  }
+  cout << "Competitions:\n";
+  printCompetitions(competitions);
+  cout << "Which one?\n";
+  choice = getChoice(1, competitions.size());
+  id = competitions[choice - 1].getId();
+  return id;
+}
+
+optional<tm> Menu::inputDate() {
+  string dateStr;
+  cout << "Enter date (YYYY-MM-DD):\n";
+  tm date = {};
+  getline(cin, dateStr);
+  istringstream ss(dateStr);
+  ss >> get_time(&date, "%Y-%m-%d");
+  if (ss.fail()) {
+    cout << "Wrong format, going back.\n" << endl;
+    getchar();
+    optional<tm> emptyDate;
+    return emptyDate;
+  }
+  return date;
 }
