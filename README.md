@@ -7,7 +7,7 @@
 TODO:
   - создание таблиц из кода (не забыть про not null поля)
   - сортировка заявок по дате
-  - удаление связанных данных
+
 
 
 -- Create table Employees
@@ -25,7 +25,7 @@ CREATE TABLE Animals (
   name varchar(255) NOT NULL,
   age int,
   gender varchar(255) NOT NULL,
-  breed_id int REFERENCES Breed(id) NOT NULL,
+  breed_id int REFERENCES Breeds(id) NOT NULL,
   exterior_description text NOT NULL,
   pedigree text NOT NULL,
   veterinarian varchar(255) NOT NULL,
@@ -43,8 +43,8 @@ CREATE TABLE Clients (
 CREATE TABLE Applications (
   id serial PRIMARY KEY,
   client_id int REFERENCES Clients(id) NOT NULL,
-  employee_id int REFERENCES Employees(id) NOT NULL,
-  breed_id int REFERENCES Breed(id) NOT NULL,
+  employee_id int REFERENCES Employees(id),
+  breed_id int REFERENCES Breeds(id) NOT NULL,
   gender varchar(255),
   application_date date NOT NULL,
   completed boolean NOT NULL
@@ -60,8 +60,9 @@ CREATE TABLE Competitions (
   award varchar(255) NOT NULL
 );
 
--- Create table Breed
-CREATE TABLE Breed (
+-- Create table Breeds
+CREATE TABLE Breeds (
   id serial PRIMARY KEY,
   name varchar(255) NOT NULL
 );
+

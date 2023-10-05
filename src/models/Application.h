@@ -10,7 +10,7 @@ class Application {
 
   public:
 
-    Application(int id, int clientId, int employeeId, int breedId, optional<Gender> gender, tm applicationDate, bool completed) {
+    Application(int id, int clientId, optional<int> employeeId, int breedId, optional<Gender> gender, tm applicationDate, bool completed) {
       this->id = id;
       this->clientId = clientId;
       this->employeeId = employeeId;
@@ -29,7 +29,7 @@ class Application {
       dateStream << put_time(&applicationDate, "%Y-%m-%d");
       oss << "[id = " << id <<
               "; clientId = " << clientId <<
-              "; employeeId = " << employeeId <<
+              "; employeeId = " << (employeeId.has_value() ? to_string(employeeId.value()) : "") <<
               "; breedId = " << breedId <<
               "; gender = " << genderStr <<
               "; applicationDate = " << dateStream.str() <<
@@ -49,11 +49,11 @@ class Application {
       this->clientId = clientId;
     }
 
-    int getEmployeeId() {
+    optional<int> getEmployeeId() {
       return employeeId;
     }
 
-    void setEmployeeId(int employeeId) {
+    void setEmployeeId(optional<int> employeeId) {
       this->employeeId = employeeId;
     }
 
@@ -92,7 +92,7 @@ class Application {
   private:
     int id;
     int clientId;
-    int employeeId;
+    optional<int> employeeId;
     int breedId;
     optional<Gender> gender;
     tm applicationDate;

@@ -239,6 +239,7 @@ class AnimalDatabaseGateway {
       SQLLEN ownerIdIndecator;
 
       // Привязываем столбцы результата к переменным
+      SQLBindCol(hStmt, 1, SQL_C_SLONG, &id, sizeof(id), NULL);
       SQLBindCol(hStmt, 2, SQL_C_CHAR, sqlName, sizeof(sqlName), NULL);
       SQLBindCol(hStmt, 3, SQL_C_SLONG, &sqlAge, sizeof(sqlAge), &ageIndicator);
       SQLBindCol(hStmt, 4, SQL_C_CHAR, sqlGender, sizeof(sqlGender), NULL);

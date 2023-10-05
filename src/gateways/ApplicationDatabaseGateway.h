@@ -93,7 +93,8 @@ class ApplicationDatabaseGateway {
       } 
 
       SQLINTEGER clientId;
-      SQLINTEGER employeeId;
+      SQLINTEGER sqlEmployeeId;
+      SQLLEN employeeIdIndecator;
       SQLINTEGER breedId;
       SQLCHAR sqlGender[256];
       SQLCHAR sqlApplicationDate[256];
@@ -101,7 +102,7 @@ class ApplicationDatabaseGateway {
 
       // Привязываем столбцы результата к переменным
       SQLBindCol(hStmt, 2, SQL_C_SLONG, &clientId, sizeof(clientId), NULL);
-      SQLBindCol(hStmt, 3, SQL_C_SLONG, &employeeId, sizeof(employeeId), NULL);
+      SQLBindCol(hStmt, 3, SQL_C_SLONG, &sqlEmployeeId, sizeof(sqlEmployeeId), &employeeIdIndecator);
       SQLBindCol(hStmt, 4, SQL_C_SLONG, &breedId, sizeof(breedId), NULL);
       SQLBindCol(hStmt, 5, SQL_C_CHAR, sqlGender, sizeof(sqlGender), NULL);
       SQLBindCol(hStmt, 6, SQL_C_CHAR, sqlApplicationDate, sizeof(sqlApplicationDate), NULL);
@@ -114,6 +115,9 @@ class ApplicationDatabaseGateway {
         gender = getGender(reinterpret_cast<char*>(sqlGender));
       tm date = getDate(reinterpret_cast<char*>(sqlApplicationDate));
       bool completed = sqlCompleted == 1;
+      optional<int> employeeId;
+      if (employeeIdIndecator != SQL_NULL_DATA)
+        employeeId = sqlEmployeeId;
 
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
 
@@ -145,7 +149,8 @@ class ApplicationDatabaseGateway {
       vector<Application> applications;
 
       SQLINTEGER id;
-      SQLINTEGER employeeId;
+      SQLINTEGER sqlEmployeeId;
+      SQLLEN employeeIdIndecator;
       SQLINTEGER breedId;
       SQLCHAR sqlGender[256];
       SQLCHAR sqlApplicationDate[256];
@@ -153,7 +158,7 @@ class ApplicationDatabaseGateway {
 
       // Привязываем столбцы результата к переменным
       SQLBindCol(hStmt, 1, SQL_C_SLONG, &id, sizeof(id), NULL);
-      SQLBindCol(hStmt, 3, SQL_C_SLONG, &employeeId, sizeof(employeeId), NULL);
+      SQLBindCol(hStmt, 3, SQL_C_SLONG, &sqlEmployeeId, sizeof(sqlEmployeeId), &employeeIdIndecator);
       SQLBindCol(hStmt, 4, SQL_C_SLONG, &breedId, sizeof(breedId), NULL);
       SQLBindCol(hStmt, 5, SQL_C_CHAR, sqlGender, sizeof(sqlGender), NULL);
       SQLBindCol(hStmt, 6, SQL_C_CHAR, sqlApplicationDate, sizeof(sqlApplicationDate), NULL);
@@ -166,6 +171,9 @@ class ApplicationDatabaseGateway {
           gender = getGender(reinterpret_cast<char*>(sqlGender));
         tm date = getDate(reinterpret_cast<char*>(sqlApplicationDate));
         bool completed = sqlCompleted == 1;
+        optional<int> employeeId;
+        if (employeeIdIndecator != SQL_NULL_DATA)
+          employeeId = sqlEmployeeId;
         Application application = Application(id, clientId, employeeId, breedId, gender, date, completed);
         applications.push_back(application);
       }
@@ -254,7 +262,8 @@ class ApplicationDatabaseGateway {
 
       SQLINTEGER id;
       SQLINTEGER clientId;
-      SQLINTEGER employeeId;
+      SQLINTEGER sqlEmployeeId;
+      SQLLEN employeeIdIndecator;
       SQLCHAR sqlGender[256];
       SQLCHAR sqlApplicationDate[256];
       SQLINTEGER sqlCompleted;
@@ -262,7 +271,7 @@ class ApplicationDatabaseGateway {
       // Привязываем столбцы результата к переменным
       SQLBindCol(hStmt, 1, SQL_C_SLONG, &id, sizeof(id), NULL);
       SQLBindCol(hStmt, 2, SQL_C_SLONG, &clientId, sizeof(clientId), NULL);
-      SQLBindCol(hStmt, 3, SQL_C_SLONG, &employeeId, sizeof(employeeId), NULL);
+      SQLBindCol(hStmt, 3, SQL_C_SLONG, &sqlEmployeeId, sizeof(sqlEmployeeId), &employeeIdIndecator);
       SQLBindCol(hStmt, 5, SQL_C_CHAR, sqlGender, sizeof(sqlGender), NULL);
       SQLBindCol(hStmt, 6, SQL_C_CHAR, sqlApplicationDate, sizeof(sqlApplicationDate), NULL);
       SQLBindCol(hStmt, 7, SQL_C_SLONG, &sqlCompleted, sizeof(sqlCompleted), NULL);
@@ -274,6 +283,9 @@ class ApplicationDatabaseGateway {
           gender = getGender(reinterpret_cast<char*>(sqlGender));
         tm date = getDate(reinterpret_cast<char*>(sqlApplicationDate));
         bool completed = sqlCompleted == 1;
+        optional<int> employeeId;
+        if (employeeIdIndecator != SQL_NULL_DATA)
+          employeeId = sqlEmployeeId;
         Application application = Application(id, clientId, employeeId, breedId, gender, date, completed);
         applications.push_back(application);
       }
@@ -306,7 +318,8 @@ class ApplicationDatabaseGateway {
 
       SQLINTEGER id;
       SQLINTEGER clientId;
-      SQLINTEGER employeeId;
+      SQLINTEGER sqlEmployeeId;
+      SQLLEN employeeIdIndecator;
       SQLINTEGER breedId;
       SQLCHAR sqlGender[256];
       SQLCHAR sqlApplicationDate[256];
@@ -315,7 +328,7 @@ class ApplicationDatabaseGateway {
       // Привязываем столбцы результата к переменным
       SQLBindCol(hStmt, 1, SQL_C_SLONG, &id, sizeof(id), NULL);
       SQLBindCol(hStmt, 2, SQL_C_SLONG, &clientId, sizeof(clientId), NULL);
-      SQLBindCol(hStmt, 3, SQL_C_SLONG, &employeeId, sizeof(employeeId), NULL);
+      SQLBindCol(hStmt, 3, SQL_C_SLONG, &sqlEmployeeId, sizeof(sqlEmployeeId), &employeeIdIndecator);
       SQLBindCol(hStmt, 4, SQL_C_SLONG, &breedId, sizeof(breedId), NULL);
       SQLBindCol(hStmt, 5, SQL_C_CHAR, sqlGender, sizeof(sqlGender), NULL);
       SQLBindCol(hStmt, 6, SQL_C_CHAR, sqlApplicationDate, sizeof(sqlApplicationDate), NULL);
@@ -328,6 +341,9 @@ class ApplicationDatabaseGateway {
           gender = getGender(reinterpret_cast<char*>(sqlGender));
         tm date = getDate(reinterpret_cast<char*>(sqlApplicationDate));
         bool completed = sqlCompleted == 1;
+        optional<int> employeeId;
+        if (employeeIdIndecator != SQL_NULL_DATA)
+          employeeId = sqlEmployeeId;
         Application application = Application(id, clientId, employeeId, breedId, gender, date, completed);
         applications.push_back(application);
       }
@@ -379,6 +395,31 @@ class ApplicationDatabaseGateway {
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
 
       return Application(id, clientId, employeeId, breedId, gender, applicationDate, completed);
+    }
+
+    void removeEmployeeFromApplication(int id) {
+      SQLHSTMT hStmt;
+      SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
+
+      SQLCHAR* updateQuery = (SQLCHAR*)"UPDATE applications SET employee_id = NULL WHERE id = ?";
+      SQLPrepare(hStmt, updateQuery, SQL_NTS);
+
+      SQLBindParameter(hStmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &id, 0, NULL);
+
+      if (SQLExecute(hStmt) != SQL_SUCCESS) {
+        SQLCHAR sqlState[6];
+        SQLCHAR errorMsg[SQL_MAX_MESSAGE_LENGTH];
+        SQLINTEGER nativeError;
+        SQLSMALLINT errorMsgLen;
+
+        SQLGetDiagRec(SQL_HANDLE_STMT, hStmt, 1, sqlState, &nativeError, errorMsg, SQL_MAX_MESSAGE_LENGTH, &errorMsgLen);
+
+        // Construct a runtime_error with the PostgreSQL error message
+        std::string errorMessage = "PostgreSQL Error [" + std::string(reinterpret_cast<char*>(sqlState)) + "]: " + std::string(reinterpret_cast<char*>(errorMsg));
+        throw std::runtime_error(errorMessage);
+      } 
+
+      SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
     }
 
     void remove(int id) {

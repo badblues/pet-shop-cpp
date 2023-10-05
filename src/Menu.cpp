@@ -76,13 +76,23 @@ void Menu::removeClient() {
   if (id == -1)
     return;
   try {
-    clientGateway.remove(id);
-    cout << "Success!\n";
-    getchar();
+    deleteClient(id);
   } catch(const exception& e) {
     cout << e.what() << "\n";
     getchar();
   }
+}
+
+void Menu::deleteClient(int id) {
+  vector<Animal> animals = animalGateway.findByClient(id);
+  for (int i = 0; i < animals.size(); i++)
+    deleteAnimal(animals[i].getId());
+  vector<Application> applications = applicationGateway.findByClient(id);
+  for (int i = 0; i < applications.size(); i++)
+    deleteApplication(applications[i].getId());
+  clientGateway.remove(id);
+  cout << "Success!\n";
+  getchar();
 }
 
 void Menu::printClients(vector<Client> clients) {
@@ -170,13 +180,24 @@ void Menu::removeBreed() {
   if (id == -1)
     return;
   try {
-    breedGateway.remove(id);
-    cout << "Success!\n";
-    getchar();
+    deleteBreed(id);
   } catch(const exception& e) {
     cout << e.what() << "\n";
     getchar();
   }
+}
+
+void Menu::deleteBreed(int id) {
+  vector<Animal> animals = animalGateway.findByBreed(id);
+  vector<Application> applications = applicationGateway.findByBreed(id);
+  if (animals.size() > 0 || applications.size() > 0) {
+    cout << "Cannot be deleted, there are animals or applications with that breed\n";
+    getchar();
+    return;
+  }
+  breedGateway.remove(id);
+  cout << "Success!\n";
+  getchar();
 }
 
 void Menu::printBreeds(vector<Breed> breeds) {
@@ -335,15 +356,21 @@ void Menu::removeEmployee() {
   if (id == -1)
     return;
   try {
-    employeeGateway.remove(id);
-    cout << "Success!\n";
-    getchar();
+    deleteEmployee(id);
   } catch(const exception& e) {
     cout << e.what() << "\n";
     getchar();
   }
 }
 
+void Menu::deleteEmployee(int id) {
+  vector<Application> applications = applicationGateway.findByEmployee(id);
+  for (int i = 0; i < applications.size(); i++)
+    applicationGateway.removeEmployeeFromApplication(applications[i].getId());
+  employeeGateway.remove(id);
+  cout << "Success!\n";
+  getchar();
+}
 
 void Menu::findEmployeeByPosition() {
   try {
@@ -447,6 +474,9 @@ void Menu::changeApplicationBreed() {
   int id = inputApplicationId();
   if (id == -1)
     return;
+  int employeeId = inputEmployeeId();
+  if (employeeId == -1)
+    return;
   try {
     Application oldApplication = applicationGateway.get(id);
     if (oldApplication.getCompleted()) {
@@ -456,7 +486,6 @@ void Menu::changeApplicationBreed() {
     }
     int clientId = oldApplication.getClientId();
     bool completed = oldApplication.getCompleted();
-    int employeeId = oldApplication.getEmployeeId();
     int breedId = inputBreedId();
     if (breedId == -1)
       return;
@@ -477,6 +506,9 @@ void Menu::changeApplicationGender() {
   int id = inputApplicationId();
   if (id == -1)
     return;
+  int employeeId = inputEmployeeId();
+  if (employeeId == -1)
+    return;
   try {
     Application oldApplication = applicationGateway.get(id);
     if (oldApplication.getCompleted()) {
@@ -486,7 +518,6 @@ void Menu::changeApplicationGender() {
     }
     int clientId = oldApplication.getClientId();
     bool completed = oldApplication.getCompleted();
-    int employeeId = oldApplication.getEmployeeId();
     int breedId = oldApplication.getBreedId();
     optional<Gender> gender = inputGender();
     tm applicationDate = oldApplication.getApplicationDate();
@@ -505,6 +536,9 @@ void Menu::closeApplication() {
   int id = inputApplicationId();
   if (id == -1)
     return;
+  int employeeId = inputEmployeeId();
+  if (employeeId == -1)
+    return;
   try {
     Application oldApplication = applicationGateway.get(id);
     if (oldApplication.getCompleted()) {
@@ -513,7 +547,6 @@ void Menu::closeApplication() {
       return;
     }
     int clientId = oldApplication.getClientId();
-    int employeeId = oldApplication.getEmployeeId();
     int breedId = oldApplication.getBreedId();
     optional<Gender> gender = oldApplication.getGender();
     tm date = oldApplication.getApplicationDate();
@@ -533,14 +566,18 @@ void Menu::removeApplication() {
   if (id == -1)
     return;
   try {
-    applicationGateway.remove(id);
-    cout << "Success!\n";
-    getchar();
+    deleteApplication(id);
   } catch(exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
   }
+}
+
+void Menu::deleteApplication(int id) {
+  applicationGateway.remove(id);
+  cout << "Success!\n";
+  getchar();
 }
 
 void Menu::listApplicationsByClient() {
@@ -586,7 +623,10 @@ void Menu::listApplicationsByBreed() {
 void Menu::printApplications(vector<Application> applications) {
   for (int i = 0; i < applications.size(); i++) {
     string clientName = clientGateway.get(applications[i].getClientId()).getName();
-    string employeeName = employeeGateway.get(applications[i].getEmployeeId()).getName();
+    string employeeName = "";
+    optional<int> employeeId = applications[i].getEmployeeId();
+    if (employeeId.has_value())
+    employeeName = employeeGateway.get(employeeId.value()).getName();
     string breed = breedGateway.get(applications[i].getBreedId()).getName();
     string genderStr = "";
     optional<Gender> gender = applications[i].getGender();
@@ -607,7 +647,10 @@ void Menu::printApplications(vector<Application> applications) {
 
 void Menu::printApplication(Application application) {
   string clientName = clientGateway.get(application.getClientId()).getName();
-  string employeeName = employeeGateway.get(application.getEmployeeId()).getName();
+  string employeeName = "";
+  optional<int> employeeId = application.getEmployeeId();
+  if (employeeId.has_value())
+    employeeName = employeeGateway.get(employeeId.value()).getName();
   string breed = breedGateway.get(application.getBreedId()).getName();
   string genderStr = "";
   optional<Gender> gender = application.getGender();
@@ -979,15 +1022,21 @@ void Menu::removeAnimal() {
   if (id == -1)
     return;
   try {
-    animalGateway.remove(id);
-    cout << "Success!\n";
-    getchar();
-    return;
+    deleteAnimal(id);
   } catch (exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
   }
+}
+
+void Menu::deleteAnimal(int id) {
+  vector<Competition> competitions = competitionGateway.findByAnimal(id);
+  for (int i = 0; i < competitions.size(); i++)
+    deleteCompetition(competitions[i].getId());
+  animalGateway.remove(id);
+  cout << "Success!\n";
+  getchar();
 }
 
 void Menu::listAnimalsByBreed() {
@@ -1272,13 +1321,17 @@ void Menu::removeCompetition() {
     return;
   try {
     competitionGateway.remove(id);
-    cout << "Success!\n";
-    getchar();
   } catch(exception& e) {
     cout << e.what() << "\n";
     getchar();
     return;
   }
+}
+
+void Menu::deleteCompetition(int id) {
+  competitionGateway.remove(id);
+  cout << "Success!\n";
+  getchar();
 }
 
 void Menu::findCompetitionByAnimal() {

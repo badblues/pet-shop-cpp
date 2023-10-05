@@ -48,7 +48,7 @@ class Menu {
                       "1. List clients\n" <<
                       "2. New client\n" <<
                       "3. Change client's name\n" <<
-                      "4. Change client's name\n" <<
+                      "4. Change client's address\n" <<
                       "5. Delete client\n" <<
                       "0. Back\n";
               choice = getChoice(0, 5);
@@ -349,6 +349,7 @@ class Menu {
     void changeClientName();
     void changeClientAddress();
     void removeClient();
+    void deleteClient(int id);
     void printClients(vector<Client> clients);
     void printClient(Client client);
     int inputClientId();
@@ -357,6 +358,7 @@ class Menu {
     void addBreed();
     void changeBreedName();
     void removeBreed();
+    void deleteBreed(int id);
     void printBreeds(vector<Breed> breeds);
     void printBreed(Breed breed);
     int inputBreedId();
@@ -368,6 +370,7 @@ class Menu {
     void changeEmployeePosition();
     void changeEmployeeSalary();
     void removeEmployee();
+    void deleteEmployee(int id);
     void findEmployeeByPosition();
     void printEmployees(vector<Employee> employees);
     void printEmployee(Employee employee);
@@ -379,6 +382,7 @@ class Menu {
     void changeApplicationGender();
     void closeApplication();
     void removeApplication();
+    void deleteApplication(int id);
     void listApplicationsByClient();
     void listApplicationsByEmployee();
     void listApplicationsByBreed();
@@ -398,6 +402,7 @@ class Menu {
     void changeAnimalVeterinarian();
     void changeAnimalOwner();
     void removeAnimal();
+    void deleteAnimal(int id);
     void listAnimalsByBreed();
     void listAnimalsByOwner();
     void printAnimals(vector<Animal> animals);
@@ -413,6 +418,7 @@ class Menu {
     void changeCompetitionDate();
     void changeCompetitionAward();
     void removeCompetition();
+    void deleteCompetition(int id);
     void findCompetitionByAnimal();
     void findCompetitionByAward();
     void findCompetitionByName();
