@@ -595,9 +595,13 @@ void Menu::listApplicationsByClient() {
 
 
 void Menu::listApplicationsByEmployee() {
-  int id = inputEmployeeId();
+  cout << "Employee:\n1. Isn't null\n2. Is null\n";
+  int choice = getChoice(1,2);
+  optional<int> employeeId;
+  if (choice == 1)
+    employeeId = inputEmployeeId();
   try {
-    vector<Application> applications = applicationGateway.findByEmployee(id);
+    vector<Application> applications = applicationGateway.findByEmployee(employeeId);
     cout << "\033[2J\033[H";
     printApplications(applications);
     getchar();

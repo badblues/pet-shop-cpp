@@ -182,14 +182,15 @@ class ApplicationDatabaseGateway {
       return applications;
     }
 
-    vector<Application> findByEmployee(int employeeId) {
+    vector<Application> findByEmployee(optional<int> employeeId) {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      SQLCHAR* selectQuery = (SQLCHAR*)"SELECT * FROM applications WHERE employee_id = ?";
+      string employeeId_str = employeeId.has_value() ? (" = " +to_string(employeeId.value()) ) : "IS NULL";
+      string query = "SELECT * FROM applications WHERE employee_id " + employeeId_str;
+      SQLCHAR* selectQuery = new SQLCHAR[query.size() + 1];
+      strcpy(reinterpret_cast<char*>(selectQuery), query.c_str());
       SQLPrepare(hStmt, selectQuery, SQL_NTS);
-
-      SQLBindParameter(hStmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &employeeId, 0, NULL);
 
       if (SQLExecute(hStmt) != SQL_SUCCESS) {
         SQLCHAR sqlState[6];
