@@ -657,7 +657,12 @@ int Menu::inputApplicationId() {
       return -1;
   } catch (std::exception& e) {
     cout << e.what() << "\n";
-    getchar;
+    getchar();
+    return -1;
+  }
+  if (applications.size() == 0) {
+    cout << "Applications not found\n";
+    getchar();
     return -1;
   }
   cout << "Applications:\n";
@@ -685,7 +690,7 @@ optional<Gender> Menu::inputGender() {
 // ANIMALS
 
 void Menu::listAnimals() {
-   try {
+  try {
     vector<Animal> animals = animalGateway.getAll();
     cout << "\033[2J\033[H";
     printAnimals(animals);
@@ -730,6 +735,296 @@ void Menu::addAnimal() {
   }
 }
 
+void Menu::changeAnimalName() {
+  int id = inputAnimalId();
+  if (id == -1)
+    return;
+  string name;
+  cout << "Enter name:\n";
+  getline(cin, name);
+  try {
+    Animal oldAnimal = animalGateway.get(id);
+    optional<int> age;
+    if (oldAnimal.getAge().has_value())
+      age = oldAnimal.getAge().value();
+    Gender gender = oldAnimal.getGender(); 
+    int breedId = oldAnimal.getBreedId();
+    string exterior = oldAnimal.getExterior();
+    string pedigree = oldAnimal.getPedigree();
+    string veterinarian = oldAnimal.getVeterinarian();
+    optional<int> ownerId;
+    if (oldAnimal.getOwnerId().has_value())
+      ownerId = oldAnimal.getOwnerId().value();
+    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    cout << "Success!\n";
+    printAnimal(updatedAnimal);
+    getchar();
+  } catch (std::exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::changeAnimalAge() {
+  int id = inputAnimalId();
+  if (id == -1)
+    return;
+  optional<int> age = inputAge();
+  try {
+    Animal oldAnimal = animalGateway.get(id);
+    string name = oldAnimal.getName();
+    Gender gender = oldAnimal.getGender(); 
+    int breedId = oldAnimal.getBreedId();
+    string exterior = oldAnimal.getExterior();
+    string pedigree = oldAnimal.getPedigree();
+    string veterinarian = oldAnimal.getVeterinarian();
+    optional<int> ownerId;
+    if (oldAnimal.getOwnerId().has_value())
+      ownerId = oldAnimal.getOwnerId().value();
+    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    cout << "Success!\n";
+    printAnimal(updatedAnimal);
+    getchar();
+  } catch (std::exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::changeAnimalGender() {
+  int id = inputAnimalId();
+  if (id == -1)
+    return;
+  cout << "Gender:\n1.male\n2.female\n";
+  int choice = getChoice(1, 2);
+  Gender gender = choice == 1 ? Gender::male : Gender::female;
+  try {
+    Animal oldAnimal = animalGateway.get(id);
+    string name = oldAnimal.getName(); 
+    optional<int> age;
+    if (oldAnimal.getAge().has_value())
+      age = oldAnimal.getAge().value();
+    int breedId = oldAnimal.getBreedId();
+    string exterior = oldAnimal.getExterior();
+    string pedigree = oldAnimal.getPedigree();
+    string veterinarian = oldAnimal.getVeterinarian();
+    optional<int> ownerId;
+    if (oldAnimal.getOwnerId().has_value())
+      ownerId = oldAnimal.getOwnerId().value();
+    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    cout << "Success!\n";
+    printAnimal(updatedAnimal);
+    getchar();
+  } catch (std::exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::changeAnimalBreed() {
+  int id = inputAnimalId();
+  if (id == -1)
+    return;
+  int breedId = inputBreedId();
+  try {
+    Animal oldAnimal = animalGateway.get(id);
+    string name = oldAnimal.getName();
+    optional<int> age;
+    if (oldAnimal.getAge().has_value())
+      age = oldAnimal.getAge().value();
+    Gender gender = oldAnimal.getGender(); 
+    string exterior = oldAnimal.getExterior();
+    string pedigree = oldAnimal.getPedigree();
+    string veterinarian = oldAnimal.getVeterinarian();
+    optional<int> ownerId;
+    if (oldAnimal.getOwnerId().has_value())
+      ownerId = oldAnimal.getOwnerId().value();
+    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    cout << "Success!\n";
+    printAnimal(updatedAnimal);
+    getchar();
+  } catch (std::exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::changeAnimalExterior() {
+int id = inputAnimalId();
+  if (id == -1)
+    return;
+  string exterior = inputOptionalString("Exterior description");
+  try {
+    Animal oldAnimal = animalGateway.get(id);
+    optional<int> age;
+    if (oldAnimal.getAge().has_value())
+      age = oldAnimal.getAge().value();
+    Gender gender = oldAnimal.getGender(); 
+    int breedId = oldAnimal.getBreedId();
+    string name = oldAnimal.getName();
+    string pedigree = oldAnimal.getPedigree();
+    string veterinarian = oldAnimal.getVeterinarian();
+    optional<int> ownerId;
+    if (oldAnimal.getOwnerId().has_value())
+      ownerId = oldAnimal.getOwnerId().value();
+    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    cout << "Success!\n";
+    printAnimal(updatedAnimal);
+    getchar();
+  } catch (std::exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::changeAnimalPedigree() {
+  int id = inputAnimalId();
+  if (id == -1)
+    return;
+  string pedigree = inputOptionalString("Pedigree");
+  try {
+    Animal oldAnimal = animalGateway.get(id);
+    string name = oldAnimal.getName();
+    optional<int> age;
+    if (oldAnimal.getAge().has_value())
+      age = oldAnimal.getAge().value();
+    Gender gender = oldAnimal.getGender(); 
+    int breedId = oldAnimal.getBreedId();
+    string exterior = oldAnimal.getExterior();
+    string veterinarian = oldAnimal.getVeterinarian();
+    optional<int> ownerId;
+    if (oldAnimal.getOwnerId().has_value())
+      ownerId = oldAnimal.getOwnerId().value();
+    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    cout << "Success!\n";
+    printAnimal(updatedAnimal);
+    getchar();
+  } catch (std::exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::changeAnimalVeterinarian() {
+  int id = inputAnimalId();
+  if (id == -1)
+    return;
+  string veterinarian = inputOptionalString("Veterinarian");
+  try {
+    Animal oldAnimal = animalGateway.get(id);
+    string name = oldAnimal.getName();
+    optional<int> age;
+    if (oldAnimal.getAge().has_value())
+      age = oldAnimal.getAge().value();
+    Gender gender = oldAnimal.getGender(); 
+    int breedId = oldAnimal.getBreedId();
+    string exterior = oldAnimal.getExterior();
+    string pedigree = oldAnimal.getPedigree();
+    optional<int> ownerId;
+    if (oldAnimal.getOwnerId().has_value())
+      ownerId = oldAnimal.getOwnerId().value();
+    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    cout << "Success!\n";
+    printAnimal(updatedAnimal);
+    getchar();
+  } catch (std::exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::changeAnimalOwner() {
+  int id = inputAnimalId();
+  if (id == -1)
+    return;
+  optional<int> ownerId;
+  cout << "Owner:\n1.Has\n2.Has no\n";
+  int choice = getChoice(1, 2);
+  if (choice == 1) {
+    ownerId = inputClientId();
+    if (ownerId == -1)
+      return;
+  }
+  try {
+    Animal oldAnimal = animalGateway.get(id);
+    string name = oldAnimal.getName();
+    optional<int> age;
+    if (oldAnimal.getAge().has_value())
+      age = oldAnimal.getAge().value();
+    Gender gender = oldAnimal.getGender(); 
+    int breedId = oldAnimal.getBreedId();
+    string exterior = oldAnimal.getExterior();
+    string pedigree = oldAnimal.getPedigree();
+    string veterinarian = oldAnimal.getVeterinarian();
+    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    cout << "Success!\n";
+    printAnimal(updatedAnimal);
+    getchar();
+  } catch (std::exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::removeAnimal() {
+  int id = inputAnimalId();
+  if (id == -1)
+    return;
+  try {
+    animalGateway.remove(id);
+    cout << "Success!\n";
+    getchar();
+    return;
+  } catch (std::exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::listAnimalsByBreed() {
+  int breedId = inputBreedId();
+  if (breedId == -1)
+    return;
+  try {
+    vector<Animal> animals = animalGateway.findByBreed(breedId);
+    cout << "\033[2J\033[H";
+    printAnimals(animals);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
+void Menu::listAnimalsByOwner() {
+  optional<int> ownerId;
+  cout << "Owner:\n1.Has\n2.Has no\n";
+  int choice = getChoice(1, 2);
+  if (choice == 1) {
+    ownerId = inputClientId();
+    if (ownerId == -1)
+      return;
+  }
+  try {
+    vector<Animal> animals = animalGateway.findByClient(ownerId);
+    cout << "\033[2J\033[H";
+    printAnimals(animals);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
 void Menu::printAnimal(Animal animal) {
   string genderStr = animal.getGender() == Gender::male ? "male" : "female";
   string breedStr = breedGateway.get(animal.getBreedId()).getName();
@@ -751,7 +1046,7 @@ void Menu::printAnimals(vector<Animal> animals) {
     string breedStr = breedGateway.get(animals[i].getBreedId()).getName();
     optional<int> ownerId = animals[i].getOwnerId();
     string ownerStr = ownerId.has_value() ? clientGateway.get(ownerId.value()).getName() : "";
-    cout << "name: " << animals[i].getName()
+    cout << i + 1 << ". name: " << animals[i].getName()
         << ", age: " << (animals[i].getAge().has_value() ? to_string(animals[i].getAge().value()) : "")
         << ", gender: " << genderStr
         << ", breed: " << breedStr
@@ -772,8 +1067,6 @@ optional<int> Menu::inputAge() {
     cin >> intAge;
     age = intAge;
   }
-  cout << "Age: " << (age.has_value() ? to_string(age.value()) : "no value");
-  getchar();
   return age;
 }
 
@@ -786,4 +1079,53 @@ string Menu::inputOptionalString(string parameter) {
     getline(cin, str);
   }
   return str;
+}
+
+int Menu::inputAnimalId() {
+  cout << "Find animal by:\n"
+       << "1. Client\n"
+       << "2. Breed\n"
+       << "3. Name\n"
+       << "0. Go back\n";
+  int choice = getChoice(0, 3);
+  int id;
+  string name;
+  vector<Animal> animals;
+  try {
+    switch(choice) {
+      case 1:
+        id = inputClientId();
+        animals = animalGateway.findByClient(id);
+        break;
+      case 2:
+        id = inputBreedId();
+        animals = animalGateway.findByBreed(id);
+        break;
+      case 3:
+        cout << "Enter name:\n";
+        getline(cin, name);
+        animals = animalGateway.findByName(name);
+        break;
+      case 0:
+        return -1;
+        break;
+    }
+    if (id == -1)
+      return -1;
+  } catch (std::exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return -1;
+  }
+  if (animals.size() == 0) {
+    cout << "Animals not found\n";
+    getchar();
+    return -1;
+  }
+  cout << "Animals:\n";
+  printAnimals(animals);
+  cout << "Which one?\n";
+  choice = getChoice(1, animals.size());
+  id = animals[choice - 1].getId();
+  return id;
 }

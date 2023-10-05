@@ -200,14 +200,58 @@ class Menu {
               cout << "Animals menu:\n" << 
                       "1. List animals\n" <<
                       "2. New animal\n" <<
+                      "3. Change name\n" <<
+                      "4. Change age\n" <<
+                      "5. Change gender\n" <<
+                      "6. Change breed\n" <<
+                      "7. Change exterior\n" <<
+                      "8. Change pedigree\n" <<
+                      "9. Change veterinarian\n" <<
+                      "10. Change owner\n" <<
+                      "11. Delete animal\n" <<
+                      "12. List animals by breed\n" <<
+                      "13. List animals by owner\n" <<
                       "0. Back\n";
-              choice = getChoice(0, 2);
+              choice = getChoice(0, 13);
               switch(choice) {
                 case 1:
                   listAnimals();
                   break;
                 case 2:
                   addAnimal();
+                  break;
+                case 3:
+                  changeAnimalName();
+                  break;
+                case 4:
+                  changeAnimalAge();
+                  break;
+                case 5:
+                  changeAnimalGender();
+                  break;
+                case 6:
+                  changeAnimalBreed();
+                  break;
+                case 7:
+                  changeAnimalExterior();
+                  break;
+                case 8:
+                  changeAnimalPedigree();
+                  break;
+                case 9:
+                  changeAnimalVeterinarian();
+                  break;
+                case 10:
+                  changeAnimalOwner();
+                  break;
+                case 11:
+                  removeAnimal();
+                  break;
+                case 12:
+                  listAnimalsByBreed();
+                  break;
+                case 13:
+                  listAnimalsByOwner();
                   break;
                 case 0:
                   innerMenuRunning = false;
@@ -288,21 +332,21 @@ class Menu {
 
     void listAnimals();
     void addAnimal();
-    // void changeAnimalName();
-    // void changeAnimalAge();
-    // void changeAnimalGender();
-    // void changeAnimalBreed();
-    // void changeAnimalExterior();
-    // void changeAnimalPedigree();
-    // void changeAnimalVeterinarian();
-    // void changeAnimalOwner();
-    // void removeAnimal();
-    // void listAnimalsByBreed();
-    // void listAnimalsByGender();
-    // void listAnimalsByOwner();
+    void changeAnimalName();
+    void changeAnimalAge();
+    void changeAnimalGender();
+    void changeAnimalBreed();
+    void changeAnimalExterior();
+    void changeAnimalPedigree();
+    void changeAnimalVeterinarian();
+    void changeAnimalOwner();
+    void removeAnimal();
+    void listAnimalsByBreed();
+    void listAnimalsByOwner();
     void printAnimal(Animal animal);
     void printAnimals(vector<Animal> animals);
     optional<int> inputAge();
     string inputOptionalString(string parameter);
+    int inputAnimalId();
 };
 
