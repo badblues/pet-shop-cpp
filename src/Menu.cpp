@@ -96,13 +96,16 @@ void Menu::deleteClient(int id) {
 }
 
 void Menu::printClients(vector<Client> clients) {
+  cout << "Clients:\n";
+  if (clients.size() == 0)
+    cout << "No clients found\n";
   for (int i = 0; i < clients.size(); i++) {
-    cout << i + 1 << ". " << clients[i].getName() << ", address: " << clients[i].getAddress() << "\n";
+    cout << i + 1 << ". Name: " << clients[i].getName() << ", Address: " << clients[i].getAddress() << "\n";
   }
 }
 
 void Menu::printClient(Client client) {
-  cout << "name: " << client.getName() << ", address: " << client.getAddress() << "\n";
+  cout << "Name: " << client.getName() << ", Address: " << client.getAddress() << "\n";
 }
 
 int Menu::inputClientId() {
@@ -122,7 +125,7 @@ int Menu::inputClientId() {
   for (int i = 0; i < clients.size(); i++) {
     cout << i + 1 << ". " << clients[i].getName() << ", address: " << clients[i].getAddress() << "\n";
   }
-  cout << "What client?\n";
+  cout << "Choose client\n";
   int choice = getChoice(1, clients.size());
   id = clients[choice - 1].getId();
   return id;
@@ -201,13 +204,16 @@ void Menu::deleteBreed(int id) {
 }
 
 void Menu::printBreeds(vector<Breed> breeds) {
+    cout << "Breeds:\n";
+  if (breeds.size() == 0)
+    cout << "No breeds found\n";
   for (int i = 0; i < breeds.size(); i++) {
-    cout << i + 1 << ". " << breeds[i].getName() << "\n";
+    cout << i + 1 << ". Name: " << breeds[i].getName() << "\n";
   }
 }
 
 void Menu::printBreed(Breed breed) {
-  cout << "name: " << breed.getName() << "\n";
+  cout << "Name: " << breed.getName() << "\n";
 }
 
 int Menu::inputBreedId() {
@@ -388,20 +394,23 @@ void Menu::findEmployeeByPosition() {
 }
 
 void Menu::printEmployees(vector<Employee> employees) {
+  cout << "Employess:\n";
+  if (employees.size() == 0)
+    cout << "No employees found\n";
   for (int i = 0; i < employees.size(); i++) {
-    cout << i + 1 << ". " << employees[i].getName()
-          << ", address: " << employees[i].getAddress()
-          << ", position: " << employees[i].getPosition()
-          << ", salary: " << employees[i].getSalary() << "$"
+    cout << i + 1 << ". Name: " << employees[i].getName()
+          << ", Address: " << employees[i].getAddress()
+          << ", Position: " << employees[i].getPosition()
+          << ", Salary: " << employees[i].getSalary() << "₽"
           << "\n";
   }
 }
 
 void Menu::printEmployee(Employee employee) {
-  cout << "name: " << employee.getName()
-       << ", address: " << employee.getAddress()
-       << ", position: " << employee.getPosition()
-       << ", salary: " << employee.getSalary() << "$"
+  cout << "Name: " << employee.getName()
+       << ", Address: " << employee.getAddress()
+       << ", Position: " << employee.getPosition()
+       << ", Salary: " << employee.getSalary() << "₽"
        << "\n";
 }
 
@@ -425,7 +434,7 @@ int Menu::inputEmployeeId() {
            << ", salary: " << employees[i].getSalary() << "$"
            << "\n";
   }
-  cout << "What employee?\n";
+  cout << "Choose employee\n";
   int choice = getChoice(1, employees.size());
   id = employees[choice - 1].getId();
   return id;
@@ -625,6 +634,9 @@ void Menu::listApplicationsByBreed() {
 }
 
 void Menu::printApplications(vector<Application> applications) {
+  cout << "Applications:\n";
+  if (applications.size() == 0)
+    cout << "No applications found\n";
   for (int i = 0; i < applications.size(); i++) {
     string clientName = clientGateway.get(applications[i].getClientId()).getName();
     string employeeName = "";
@@ -639,12 +651,12 @@ void Menu::printApplications(vector<Application> applications) {
     tm applicationDate = applications[i].getApplicationDate();
     stringstream dateStream;
     dateStream << put_time(&applicationDate, "%Y-%m-%d");
-    cout << i + 1 << ". client: " << clientName
-          << ", employee: " << employeeName
-          << ", breed: " << breed
-          << ", gender: " << genderStr
-          << ", applicationDate: " << dateStream.str()
-          << ", completed: " << applications[i].getCompleted()
+    cout << i + 1 << ". Client's name: " << clientName
+          << ", Employee: " << employeeName
+          << ", Animal breed: " << breed
+          << ", Animal gender: " << genderStr
+          << ", Filling date: " << dateStream.str()
+          << ", Completed: " << applications[i].getCompleted()
           << "\n";
     }
 }
@@ -663,12 +675,12 @@ void Menu::printApplication(Application application) {
   tm applicationDate = application.getApplicationDate();
   stringstream dateStream;
   dateStream << put_time(&applicationDate, "%Y-%m-%d");
-  cout  << "client name: " << clientName
-        << ", employee: " << employeeName
-        << ", breed: " << breed
-        << ", gender: " << genderStr
-        << ", applicationDate: " << dateStream.str()
-        << ", completed: " << application.getCompleted()
+  cout  << "Client's name: " << clientName
+        << ", Employee: " << employeeName
+        << ", Animal breed: " << breed
+        << ", Animal gender: " << genderStr
+        << ", Filling date: " << dateStream.str()
+        << ", Completed: " << application.getCompleted()
         << "\n";
 }
 
@@ -714,7 +726,7 @@ int Menu::inputApplicationId() {
   }
   cout << "Applications:\n";
   printApplications(applications);
-  cout << "Which one?\n";
+  cout << "Choose application\n";
   choice = getChoice(1, applications.size());
   id = applications[choice - 1].getId();
   return id;
@@ -1083,30 +1095,33 @@ void Menu::printAnimal(Animal animal) {
   string breedStr = breedGateway.get(animal.getBreedId()).getName();
   optional<int> ownerId = animal.getOwnerId();
   string ownerStr = ownerId.has_value() ? clientGateway.get(ownerId.value()).getName() : "";
-  cout << "name: " << animal.getName()
-       << ", age: " << (animal.getAge().has_value() ? to_string(animal.getAge().value()) : "")
-       << ", gender: " << genderStr
-       << ", breed: " << breedStr
-       << ", exterior: " << animal.getExterior()
-       << ", pedigree: " << animal.getPedigree()
-       << ", veterinarian: " << animal.getVeterinarian()
-       << ", owner: " << ownerStr;
+  cout << "Name: " << animal.getName()
+       << ", Age: " << (animal.getAge().has_value() ? to_string(animal.getAge().value()) : "")
+       << ", Gender: " << genderStr
+       << ", Breed: " << breedStr
+       << ", Exterior description: " << animal.getExterior()
+       << ", Pedigree: " << animal.getPedigree()
+       << ", Veterinarian: " << animal.getVeterinarian()
+       << ", Owner: " << ownerStr;
 }
 
 void Menu::printAnimals(vector<Animal> animals) {
+  cout << "Animals:\n";
+  if (animals.size() == 0)
+    cout << "No animals found\n";
   for (int i = 0; i < animals.size(); i++) {
     string genderStr = animals[i].getGender() == Gender::male ? "male" : "female";
     string breedStr = breedGateway.get(animals[i].getBreedId()).getName();
     optional<int> ownerId = animals[i].getOwnerId();
     string ownerStr = ownerId.has_value() ? clientGateway.get(ownerId.value()).getName() : "";
-    cout << i + 1 << ". name: " << animals[i].getName()
-        << ", age: " << (animals[i].getAge().has_value() ? to_string(animals[i].getAge().value()) : "")
-        << ", gender: " << genderStr
-        << ", breed: " << breedStr
-        << ", exterior: " << animals[i].getExterior()
-        << ", pedigree: " << animals[i].getPedigree()
-        << ", veterinarian: " << animals[i].getVeterinarian()
-        << ", owner: " << ownerStr << "\n";
+    cout << i + 1 << ". Name: " << animals[i].getName()
+        << ", Age: " << (animals[i].getAge().has_value() ? to_string(animals[i].getAge().value()) : "")
+        << ", Gender: " << genderStr
+        << ", Breed: " << breedStr
+        << ", Exterior description: " << animals[i].getExterior()
+        << ", Pedigree: " << animals[i].getPedigree()
+        << ", Veterinarian: " << animals[i].getVeterinarian()
+        << ", Owner: " << ownerStr << "\n";
   }
 }
 
@@ -1177,7 +1192,7 @@ int Menu::inputAnimalId() {
   }
   cout << "Animals:\n";
   printAnimals(animals);
-  cout << "Which one?\n";
+  cout << "Choose animal\n";
   choice = getChoice(1, animals.size());
   id = animals[choice - 1].getId();
   return id;
@@ -1387,18 +1402,21 @@ void Menu::findCompetitionByName() {
 }
 
 void Menu::printCompetitions(vector<Competition> competitions) {
+  cout << "Competitions:\n";
+  if (competitions.size() == 0)
+    cout << "No competitions found\n";
   for (int i = 0; i < competitions.size(); i++) {
     stringstream dateStream;
     tm date = competitions[i].getDate();
     dateStream << put_time(&date, "%Y-%m-%d");
     Animal animal = animalGateway.get(competitions[i].getAnimalId());
     Breed breed = breedGateway.get(animal.getBreedId());
-    cout << i + 1 << ". animal name = " << animal.getName() <<
-            ", animal breed = " << breed.getName() <<
-            ", competition name = " << competitions[i].getName() <<
-            ", location = " << competitions[i].getLocation() <<
-            ", date = " << dateStream.str() <<
-            ", award = " << competitions[i].getAward() << "\n";
+    cout << i + 1 << ". Animal name: " << animal.getName() <<
+            ", Animal breed: " << breed.getName() <<
+            ", Competition name: " << competitions[i].getName() <<
+            ", Location: " << competitions[i].getLocation() <<
+            ", Date: " << dateStream.str() <<
+            ", Award: " << competitions[i].getAward() << "\n";
   }
 }
 
@@ -1408,12 +1426,12 @@ void Menu::printCompetition(Competition competition) {
   dateStream << put_time(&date, "%Y-%m-%d");
   Animal animal = animalGateway.get(competition.getAnimalId());
   Breed breed = breedGateway.get(animal.getBreedId());
-  cout << "animal name = " << animal.getName() <<
-          ", animal breed = " << breed.getName() <<
-          ", competition name = " << competition.getName() <<
-          ", location = " << competition.getLocation() <<
-          ", date = " << dateStream.str() <<
-          ", award = " << competition.getAward() << "\n";
+  cout << "Animal name: " << animal.getName() <<
+          ", Animal breed: " << breed.getName() <<
+          ", Competition name: " << competition.getName() <<
+          ", Location: " << competition.getLocation() <<
+          ", Date: " << dateStream.str() <<
+          ", Award: " << competition.getAward() << "\n";
 }
 
 int Menu::inputCompetitionId() {
@@ -1456,7 +1474,7 @@ int Menu::inputCompetitionId() {
   }
   cout << "Competitions:\n";
   printCompetitions(competitions);
-  cout << "Which one?\n";
+  cout << "Choose competition\n";
   choice = getChoice(1, competitions.size());
   id = competitions[choice - 1].getId();
   return id;

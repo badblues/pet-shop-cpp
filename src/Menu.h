@@ -212,8 +212,8 @@ class Menu {
                       "9. Change veterinarian\n" <<
                       "10. Change owner\n" <<
                       "11. Delete animal\n" <<
-                      "12. List animals by breed\n" <<
-                      "13. List animals by owner\n" <<
+                      "12. Find animals by breed\n" <<
+                      "13. Find animals by owner\n" <<
                       "0. Back\n";
               choice = getChoice(0, 13);
               switch(choice) {
