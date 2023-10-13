@@ -3,6 +3,10 @@
 #include <stdexcept>
 #include <sql.h>
 #include "./models/Client.h"
+#include "./repositories/ClientRepository.h"
+#include "./repositories/BreedRepository.h"
+#include "./repositories/EmployeeRepository.h"
+#include "./repositories/ApplicationRepository.h"
 #include "./gateways/ClientDatabaseGateway.h"
 #include "./gateways/BreedDatabaseGateway.h"
 #include "./gateways/EmployeeDatabaseGateway.h"
@@ -18,10 +22,10 @@ class Menu {
 
     Menu(SQLHDBC hDbc) {
       this-> hDbc;
-      this->clientGateway = ClientDatabaseGateway(hDbc);
-      this->breedGateway = BreedDatabaseGateway(hDbc);
-      this->employeeGateway = EmployeeDatabaseGateway(hDbc);
-      this->applicationGateway = ApplicationDatabaseGateway(hDbc);
+      clientRepository = ClientRepository(ClientDatabaseGateway(hDbc));
+      breedRepository = BreedRepository(BreedDatabaseGateway(hDbc));
+      employeeRepository = EmployeeRepository(EmployeeDatabaseGateway(hDbc));
+      applicationRepository = ApplicationRepository(ApplicationDatabaseGateway(hDbc));
       this->animalGateway = AnimalDatabaseGateway(hDbc);
       this->competitionGateway = CompetitionDatabaseGateway(hDbc);
     }
@@ -326,10 +330,10 @@ class Menu {
 
   private:
     SQLHDBC hDbc;
-    ClientDatabaseGateway clientGateway;
-    BreedDatabaseGateway breedGateway;
-    EmployeeDatabaseGateway employeeGateway;
-    ApplicationDatabaseGateway applicationGateway;
+    ClientRepository clientRepository;
+    BreedRepository breedRepository;
+    EmployeeRepository employeeRepository;
+    ApplicationRepository applicationRepository;
     AnimalDatabaseGateway animalGateway;
     CompetitionDatabaseGateway competitionGateway;
     bool menuRunning = true;

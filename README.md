@@ -5,18 +5,20 @@
 - операции в соответствии с семантикой варианта, без привязки к реляционной модели
 
 TODO:
-  - создание таблиц из кода (не забыть про not null поля)
+- многие ко многим между animal и competitions:
+  - создать модели
+- убрать зависимости между gateway и model
+- добавить репозитории, которые будут обрабатывать ответы от gateway
+- проверить правильно ли пробрасываются ошибки
+- сделать меню более удобным (выбираешь клиента, совершаешь операции с ним)
+- обновить создание таблиц
 
-
-
--- Create table Breeds
-CREATE TABLE Breeds (
+CREATE TABLE IF NOT EXISTS Breeds (
   id serial PRIMARY KEY,
   name varchar(255) NOT NULL
 );
 
--- Create table Employees
-CREATE TABLE Employees (
+CREATE TABLE IF NOT EXISTS Employees (
   id serial PRIMARY KEY,
   name varchar(255) NOT NULL,
   address varchar(255) NOT NULL,
@@ -24,15 +26,13 @@ CREATE TABLE Employees (
   salary decimal(10, 2) NOT NULL
 );
 
--- Create table Clients
-CREATE TABLE Clients (
+CREATE TABLE IF NOT EXISTS Clients (
   id serial PRIMARY KEY,
   name varchar(255) NOT NULL,
   address varchar(255) NOT NULL
 );
 
--- Create table Animals
-CREATE TABLE Animals (
+CREATE TABLE IF NOT EXISTS Animals (
   id serial PRIMARY KEY,
   name varchar(255) NOT NULL,
   age int,
@@ -44,10 +44,22 @@ CREATE TABLE Animals (
   owner_id int REFERENCES Clients(id)
 );
 
+CREATE TABLE IF NOT EXISTS Competitions (
+  id serial PRIMARY KEY,
+  animal_id int REFERENCES Animals(id) NOT NULL,
+  name varchar(255) NOT NULL,
+  location varchar(255) NOT NULL,
+  date date NOT NULL
+);
 
+CREATE TABLE IF NOT EXISTS AnimalCompetitions (
+  animal_id int REFERENCES Animals(id) NOT NULL,
+  competition_id int REFERENCES Competitions(id) NOT NULL,
+  award varchar(255) not null,
+  PRIMARY KEY (animal_id, competition_id)
+);
 
--- Create table Applications
-CREATE TABLE Applications (
+CREATE TABLE IF NOT EXISTS Applications (
   id serial PRIMARY KEY,
   client_id int REFERENCES Clients(id) NOT NULL,
   employee_id int REFERENCES Employees(id),
@@ -57,14 +69,6 @@ CREATE TABLE Applications (
   completed boolean NOT NULL
 );
 
--- Create table Competitions
-CREATE TABLE IF NOT EXISTS Competitions (
-  id serial PRIMARY KEY,
-  animal_id int REFERENCES Animals(id) NOT NULL,
-  name varchar(255) NOT NULL,
-  location varchar(255) NOT NULL,
-  date date NOT NULL,
-  award varchar(255) NOT NULL
-);
+
 
 

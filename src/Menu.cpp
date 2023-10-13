@@ -4,7 +4,7 @@
 
 void Menu::listClients() {
   try {
-    vector<Client> clients = clientGateway.getAll();
+    vector<Client> clients = clientRepository.getAll();
     cout << "\033[2J\033[H";
     printClients(clients);
     getchar();
@@ -22,9 +22,10 @@ void Menu::addClient() {
   cout << "Enter address:\n";
   getline(cin, address);
   try {
-    Client client = clientGateway.create(name, address);
+    Client client = clientRepository.add(name, address);
     cout << "Success!\n";
     printClient(client);
+    getchar();
   } catch(const exception& e) {
     cout << e.what() << "\n";
     getchar();
@@ -39,9 +40,9 @@ void Menu::changeClientName() {
   cout << "Enter new name:\n";
   getline(cin, name);
   try {
-    Client oldClient = clientGateway.get(id);
+    Client oldClient = clientRepository.get(id);
     string address = oldClient.getAddress();
-    Client updatedClient = clientGateway.update(id, name, address);
+    Client updatedClient = clientRepository.update(id, name, address);
     cout << "Success!\n";
     printClient(updatedClient);
     getchar();
@@ -59,9 +60,9 @@ void Menu::changeClientAddress() {
   cout << "Enter new address:\n";
   getline(cin, address);
   try {
-    Client oldClient = clientGateway.get(id);
+    Client oldClient = clientRepository.get(id);
     string name = oldClient.getName();
-    Client updatedClient = clientGateway.update(id, name, address);
+    Client updatedClient = clientRepository.update(id, name, address);
     cout << "Success!\n";
     printClient(updatedClient);
     getchar();
@@ -87,10 +88,10 @@ void Menu::deleteClient(int id) {
   vector<Animal> animals = animalGateway.findByClient(id);
   for (int i = 0; i < animals.size(); i++)
     deleteAnimal(animals[i].getId());
-  vector<Application> applications = applicationGateway.findByClient(id);
+  vector<Application> applications = applicationRepository.findByClientId(id);
   for (int i = 0; i < applications.size(); i++)
     deleteApplication(applications[i].getId());
-  clientGateway.remove(id);
+  clientRepository.remove(id);
   cout << "Success!\n";
   getchar();
 }
@@ -115,7 +116,7 @@ int Menu::inputClientId() {
   if (name == "") {
     return -1;
   }
-  vector<Client> clients = clientGateway.findByName(name);
+  vector<Client> clients = clientRepository.findByName(name);
   if (clients.size() == 0) {
     cout << "Client with that name wasn't found\n";
     getchar();
@@ -135,7 +136,7 @@ int Menu::inputClientId() {
 
 void Menu::listBreeds() {
   try {
-    vector<Breed> breeds = breedGateway.getAll();
+    vector<Breed> breeds = breedRepository.getAll();
     cout << "\033[2J\033[H";
     printBreeds(breeds);
     getchar();
@@ -150,7 +151,7 @@ void Menu::addBreed() {
   cout << "Enter name:\n";
   getline(cin, name);
   try {
-    Breed breed = breedGateway.create(name);
+    Breed breed = breedRepository.add(name);
     cout << "Success!\n";
     printBreed(breed);
     getchar();
@@ -168,7 +169,7 @@ void Menu::changeBreedName() {
   cout << "Enter new name:\n";
   getline(cin, name);
   try {
-    Breed updatedBreed = breedGateway.update(id, name);
+    Breed updatedBreed = breedRepository.update(id, name);
     cout << "Success!\n";
     printBreed(updatedBreed);
     getchar();
@@ -192,13 +193,13 @@ void Menu::removeBreed() {
 
 void Menu::deleteBreed(int id) {
   vector<Animal> animals = animalGateway.findByBreed(id);
-  vector<Application> applications = applicationGateway.findByBreed(id);
+  vector<Application> applications = applicationRepository.findByBreedId(id);
   if (animals.size() > 0 || applications.size() > 0) {
     cout << "Cannot be deleted, there are animals or applications with that breed\n";
     getchar();
     return;
   }
-  breedGateway.remove(id);
+  breedRepository.remove(id);
   cout << "Success!\n";
   getchar();
 }
@@ -222,7 +223,7 @@ int Menu::inputBreedId() {
   getline(cin, name);
   if (name == "")
     return -1;
-  vector<Breed> breeds = breedGateway.findByName(name);
+  vector<Breed> breeds = breedRepository.findByName(name);
   if (breeds.size() == 0) {
     cout << "Breed with that name wasn't found\n";
     getchar();
@@ -235,7 +236,7 @@ int Menu::inputBreedId() {
 
 void Menu::listEmployees() {
   try {
-    vector<Employee> employees = employeeGateway.getAll();
+    vector<Employee> employees = employeeRepository.getAll();
     cout << "\033[2J\033[H";
     printEmployees(employees);
     getchar();
@@ -259,9 +260,10 @@ void Menu::addEmployee() {
   cout << "Enter salary:\n";
   cin >> salary;
   try {
-    Employee employee = employeeGateway.create(name, address, position, salary);
+    Employee employee = employeeRepository.add(name, address, position, salary);
     cout << "Success!\n";
     printEmployee(employee);
+    getchar();
     getchar();
   } catch(const exception& e) {
     cout << e.what() << "\n";
@@ -277,11 +279,11 @@ void Menu::changeEmployeeName() {
   cout << "Enter new name:\n";
   getline(cin, name);
   try {
-    Employee oldEmployee = employeeGateway.get(id);
+    Employee oldEmployee = employeeRepository.get(id);
     string address = oldEmployee.getAddress();
     string position = oldEmployee.getPosition();
     double salary = oldEmployee.getSalary();
-    Employee updatedEmployee = employeeGateway.update(id, name, address, position, salary);
+    Employee updatedEmployee = employeeRepository.update(id, name, address, position, salary);
     cout << "Success!\n";
     printEmployee(updatedEmployee);
     getchar();
@@ -299,11 +301,11 @@ void Menu::changeEmployeeAddress() {
   cout << "Enter new address:\n";
   getline(cin, address);
   try {
-    Employee oldEmployee = employeeGateway.get(id);
+    Employee oldEmployee = employeeRepository.get(id);
     string name = oldEmployee.getName();
     string position = oldEmployee.getPosition();
     double salary = oldEmployee.getSalary();
-    Employee updatedEmployee = employeeGateway.update(id, name, address, position, salary);
+    Employee updatedEmployee = employeeRepository.update(id, name, address, position, salary);
     cout << "Success!\n";
     printEmployee(updatedEmployee);
     getchar();
@@ -321,11 +323,11 @@ void Menu::changeEmployeePosition() {
   cout << "Enter new position:\n";
   getline(cin, position);
   try {
-    Employee oldEmployee = employeeGateway.get(id);
+    Employee oldEmployee = employeeRepository.get(id);
     string name = oldEmployee.getName();
     string address = oldEmployee.getAddress();
     double salary = oldEmployee.getSalary();
-    Employee updatedEmployee = employeeGateway.update(id, name, address, position, salary);
+    Employee updatedEmployee = employeeRepository.update(id, name, address, position, salary);
     cout << "Success!\n";
     printEmployee(updatedEmployee);
     getchar();
@@ -343,11 +345,11 @@ void Menu::changeEmployeeSalary() {
   cout << "Enter new salary:\n";
   cin >> salary;
   try {
-    Employee oldEmployee = employeeGateway.get(id);
+    Employee oldEmployee = employeeRepository.get(id);
     string name = oldEmployee.getName();
     string address = oldEmployee.getAddress();
     string position = oldEmployee.getPosition();
-    Employee updatedEmployee = employeeGateway.update(id, name, address, position, salary);
+    Employee updatedEmployee = employeeRepository.update(id, name, address, position, salary);
     cout << "Success!\n";
     printEmployee(updatedEmployee);
     getchar();
@@ -370,10 +372,10 @@ void Menu::removeEmployee() {
 }
 
 void Menu::deleteEmployee(int id) {
-  vector<Application> applications = applicationGateway.findByEmployee(id);
+  vector<Application> applications = applicationRepository.findByEmployeeId(id);
   for (int i = 0; i < applications.size(); i++)
-    applicationGateway.removeEmployeeFromApplication(applications[i].getId());
-  employeeGateway.remove(id);
+    applicationRepository.removeEmployee(applications[i].getId());
+  employeeRepository.remove(id);
   cout << "Success!\n";
   getchar();
 }
@@ -383,7 +385,7 @@ void Menu::findEmployeeByPosition() {
     string position;
     cout << "Enter position:\n";
     getline(cin, position);
-    vector<Employee> employees = employeeGateway.findByPosition(position);
+    vector<Employee> employees = employeeRepository.findByPosition(position);
     cout << "\033[2J\033[H";
     printEmployees(employees);
     getchar();
@@ -420,7 +422,7 @@ int Menu::inputEmployeeId() {
   getline(cin, name);
   if (name == "")
     return -1;
-  vector<Employee> employees = employeeGateway.findByName(name);
+  vector<Employee> employees = employeeRepository.findByName(name);
   if (employees.size() == 0) {
     cout << "Employee with that name wasn't found\n";
     getchar();
@@ -444,7 +446,7 @@ int Menu::inputEmployeeId() {
 
 void Menu::listApplications() {
   try {
-    vector<Application> applications = applicationGateway.getAll();
+    vector<Application> applications = applicationRepository.getAll();
     cout << "\033[2J\033[H";
     printApplications(applications);
     getchar();
@@ -469,7 +471,7 @@ void Menu::addApplication() {
   tm applicationDate = *localtime(&currentTime);
 
   try {
-    Application application = applicationGateway.create(clientId, employeeId, breedId, gender, applicationDate, false);
+    Application application = applicationRepository.add(clientId, employeeId, breedId, gender, applicationDate, false);
     cout << "Success!\n";
     printApplication(application);
     getchar();
@@ -487,7 +489,7 @@ void Menu::changeApplicationBreed() {
   if (employeeId == -1)
     return;
   try {
-    Application oldApplication = applicationGateway.get(id);
+    Application oldApplication = applicationRepository.get(id);
     if (oldApplication.getCompleted()) {
       cout << "Cannot update completed application\n";
       getchar();
@@ -500,7 +502,7 @@ void Menu::changeApplicationBreed() {
       return;
     optional<Gender> gender = oldApplication.getGender();
     tm applicationDate = oldApplication.getApplicationDate();
-    Application updatedApplication = applicationGateway.update(id, clientId, employeeId, breedId, gender, applicationDate, completed);
+    Application updatedApplication = applicationRepository.update(id, clientId, employeeId, breedId, gender, applicationDate, completed);
     cout << "Success!\n";
     printApplication(updatedApplication);
     getchar();
@@ -519,7 +521,7 @@ void Menu::changeApplicationGender() {
   if (employeeId == -1)
     return;
   try {
-    Application oldApplication = applicationGateway.get(id);
+    Application oldApplication = applicationRepository.get(id);
     if (oldApplication.getCompleted()) {
       cout << "Cannot update completed application\n";
       getchar();
@@ -530,7 +532,7 @@ void Menu::changeApplicationGender() {
     int breedId = oldApplication.getBreedId();
     optional<Gender> gender = inputGender();
     tm applicationDate = oldApplication.getApplicationDate();
-    Application updatedApplication = applicationGateway.update(id, clientId, employeeId, breedId, gender, applicationDate, completed);
+    Application updatedApplication = applicationRepository.update(id, clientId, employeeId, breedId, gender, applicationDate, completed);
     cout << "Success!\n";
     printApplication(updatedApplication);
     getchar();
@@ -549,7 +551,7 @@ void Menu::closeApplication() {
   if (employeeId == -1)
     return;
   try {
-    Application oldApplication = applicationGateway.get(id);
+    Application oldApplication = applicationRepository.get(id);
     if (oldApplication.getCompleted()) {
       cout << "Already closed\n";
       getchar();
@@ -559,7 +561,7 @@ void Menu::closeApplication() {
     int breedId = oldApplication.getBreedId();
     optional<Gender> gender = oldApplication.getGender();
     tm date = oldApplication.getApplicationDate();
-    Application updatedApplication = applicationGateway.update(id, clientId, employeeId, breedId, gender, date, true);
+    Application updatedApplication = applicationRepository.update(id, clientId, employeeId, breedId, gender, date, true);
     cout << "Success!\n";
     printApplication(updatedApplication);
     getchar();
@@ -584,7 +586,7 @@ void Menu::removeApplication() {
 }
 
 void Menu::deleteApplication(int id) {
-  applicationGateway.remove(id);
+  applicationRepository.remove(id);
   cout << "Success!\n";
   getchar();
 }
@@ -592,7 +594,7 @@ void Menu::deleteApplication(int id) {
 void Menu::listApplicationsByClient() {
   int id = inputClientId();
   try {
-    vector<Application> applications = applicationGateway.findByClient(id);
+    vector<Application> applications = applicationRepository.findByClientId(id);
     cout << "\033[2J\033[H";
     printApplications(applications);
     getchar();
@@ -610,7 +612,7 @@ void Menu::listApplicationsByEmployee() {
   if (choice == 1)
     employeeId = inputEmployeeId();
   try {
-    vector<Application> applications = applicationGateway.findByEmployee(employeeId);
+    vector<Application> applications = applicationRepository.findByEmployeeId(employeeId);
     cout << "\033[2J\033[H";
     printApplications(applications);
     getchar();
@@ -623,7 +625,7 @@ void Menu::listApplicationsByEmployee() {
 void Menu::listApplicationsByBreed() {
   int id = inputBreedId();
   try {
-    vector<Application> applications = applicationGateway.findByBreed(id);
+    vector<Application> applications = applicationRepository.findByBreedId(id);
     cout << "\033[2J\033[H";
     printApplications(applications);
     getchar();
@@ -638,12 +640,12 @@ void Menu::printApplications(vector<Application> applications) {
   if (applications.size() == 0)
     cout << "No applications found\n";
   for (int i = 0; i < applications.size(); i++) {
-    string clientName = clientGateway.get(applications[i].getClientId()).getName();
+    string clientName = clientRepository.get(applications[i].getClientId()).getName();
     string employeeName = "";
     optional<int> employeeId = applications[i].getEmployeeId();
     if (employeeId.has_value())
-    employeeName = employeeGateway.get(employeeId.value()).getName();
-    string breed = breedGateway.get(applications[i].getBreedId()).getName();
+    employeeName = employeeRepository.get(employeeId.value()).getName();
+    string breed = breedRepository.get(applications[i].getBreedId()).getName();
     string genderStr = "";
     optional<Gender> gender = applications[i].getGender();
     if (gender.has_value())
@@ -662,12 +664,12 @@ void Menu::printApplications(vector<Application> applications) {
 }
 
 void Menu::printApplication(Application application) {
-  string clientName = clientGateway.get(application.getClientId()).getName();
+  string clientName = clientRepository.get(application.getClientId()).getName();
   string employeeName = "";
   optional<int> employeeId = application.getEmployeeId();
   if (employeeId.has_value())
-    employeeName = employeeGateway.get(employeeId.value()).getName();
-  string breed = breedGateway.get(application.getBreedId()).getName();
+    employeeName = employeeRepository.get(employeeId.value()).getName();
+  string breed = breedRepository.get(application.getBreedId()).getName();
   string genderStr = "";
   optional<Gender> gender = application.getGender();
   if (gender.has_value())
@@ -698,15 +700,15 @@ int Menu::inputApplicationId() {
     switch(choice) {
       case 1:
         id = inputClientId();
-        applications = applicationGateway.findByClient(id);
+        applications = applicationRepository.findByClientId(id);
         break;
       case 2:
         id = inputEmployeeId();
-        applications = applicationGateway.findByEmployee(id);
+        applications = applicationRepository.findByEmployeeId(id);
         break;
       case 3:
         id = inputBreedId();
-        applications = applicationGateway.findByBreed(id);
+        applications = applicationRepository.findByBreedId(id);
         break;
       case 0:
         return -1;
@@ -1092,9 +1094,9 @@ void Menu::listAnimalsByOwner() {
 
 void Menu::printAnimal(Animal animal) {
   string genderStr = animal.getGender() == Gender::male ? "male" : "female";
-  string breedStr = breedGateway.get(animal.getBreedId()).getName();
+  string breedStr = breedRepository.get(animal.getBreedId()).getName();
   optional<int> ownerId = animal.getOwnerId();
-  string ownerStr = ownerId.has_value() ? clientGateway.get(ownerId.value()).getName() : "";
+  string ownerStr = ownerId.has_value() ? clientRepository.get(ownerId.value()).getName() : "";
   cout << "Name: " << animal.getName()
        << ", Age: " << (animal.getAge().has_value() ? to_string(animal.getAge().value()) : "")
        << ", Gender: " << genderStr
@@ -1111,9 +1113,9 @@ void Menu::printAnimals(vector<Animal> animals) {
     cout << "No animals found\n";
   for (int i = 0; i < animals.size(); i++) {
     string genderStr = animals[i].getGender() == Gender::male ? "male" : "female";
-    string breedStr = breedGateway.get(animals[i].getBreedId()).getName();
+    string breedStr = breedRepository.get(animals[i].getBreedId()).getName();
     optional<int> ownerId = animals[i].getOwnerId();
-    string ownerStr = ownerId.has_value() ? clientGateway.get(ownerId.value()).getName() : "";
+    string ownerStr = ownerId.has_value() ? clientRepository.get(ownerId.value()).getName() : "";
     cout << i + 1 << ". Name: " << animals[i].getName()
         << ", Age: " << (animals[i].getAge().has_value() ? to_string(animals[i].getAge().value()) : "")
         << ", Gender: " << genderStr
@@ -1410,7 +1412,7 @@ void Menu::printCompetitions(vector<Competition> competitions) {
     tm date = competitions[i].getDate();
     dateStream << put_time(&date, "%Y-%m-%d");
     Animal animal = animalGateway.get(competitions[i].getAnimalId());
-    Breed breed = breedGateway.get(animal.getBreedId());
+    Breed breed = breedRepository.get(animal.getBreedId());
     cout << i + 1 << ". Animal name: " << animal.getName() <<
             ", Animal breed: " << breed.getName() <<
             ", Competition name: " << competitions[i].getName() <<
@@ -1425,7 +1427,7 @@ void Menu::printCompetition(Competition competition) {
   tm date = competition.getDate();
   dateStream << put_time(&date, "%Y-%m-%d");
   Animal animal = animalGateway.get(competition.getAnimalId());
-  Breed breed = breedGateway.get(animal.getBreedId());
+  Breed breed = breedRepository.get(animal.getBreedId());
   cout << "Animal name: " << animal.getName() <<
           ", Animal breed: " << breed.getName() <<
           ", Competition name: " << competition.getName() <<

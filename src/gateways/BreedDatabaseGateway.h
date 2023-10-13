@@ -5,9 +5,9 @@
 #include <stdexcept>
 #include <sstream>
 #include <string>
-#include "../models/Breed.h"
+#include "./DatabaseGateway.h"
 
-class BreedDatabaseGateway {
+class BreedDatabaseGateway : DatabaseGateway {
 
   public:
 
@@ -19,212 +19,84 @@ class BreedDatabaseGateway {
       this->hDbc = hDbc;
     }
 
-    Breed create(string name) {
-        SQLHSTMT hStmt;
-        SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
-
-        SQLCHAR* insertQuery = (SQLCHAR*)"INSERT INTO breeds (name) VALUES (?)";
-        SQLPrepare(hStmt, insertQuery, SQL_NTS);
-
-        // Задайте параметры для вставки
-        const SQLCHAR* sqlName = reinterpret_cast<const SQLCHAR*>(name.c_str());
-        SQLBindParameter(hStmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (SQLPOINTER)sqlName, 0, NULL);
-        
-        if (SQLExecute(hStmt) != SQL_SUCCESS) {
-          SQLCHAR sqlState[6];
-          SQLCHAR errorMsg[SQL_MAX_MESSAGE_LENGTH];
-          SQLINTEGER nativeError;
-          SQLSMALLINT errorMsgLen;
-
-          SQLGetDiagRec(SQL_HANDLE_STMT, hStmt, 1, sqlState, &nativeError, errorMsg, SQL_MAX_MESSAGE_LENGTH, &errorMsgLen);
-
-          // Construct a runtime_error with the PostgreSQL error message
-          std::string errorMessage = "PostgreSQL Error [" + std::string(reinterpret_cast<char*>(sqlState)) + "]: " + std::string(reinterpret_cast<char*>(errorMsg));
-          throw std::runtime_error(errorMessage);
-        }
-
-        SQLINTEGER id;
-        SQLBindCol(hStmt, 1, SQL_C_SLONG, &id, sizeof(id), NULL);
-        SQLFetch(hStmt);
-
-        SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
-
-        return Breed(id, name);
-    }
-
-    Breed get(int id) {
+    vector<vector<string>> create(string name) {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      SQLCHAR* selectQuery = (SQLCHAR*)"SELECT * FROM breeds WHERE id = ?";
-      SQLPrepare(hStmt, selectQuery, SQL_NTS);
-
-      SQLBindParameter(hStmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &id, 0, NULL);
-
-      if (SQLExecute(hStmt) != SQL_SUCCESS) {
-        SQLCHAR sqlState[6];
-        SQLCHAR errorMsg[SQL_MAX_MESSAGE_LENGTH];
-        SQLINTEGER nativeError;
-        SQLSMALLINT errorMsgLen;
-
-        SQLGetDiagRec(SQL_HANDLE_STMT, hStmt, 1, sqlState, &nativeError, errorMsg, SQL_MAX_MESSAGE_LENGTH, &errorMsgLen);
-
-        // Construct a runtime_error with the PostgreSQL error message
-        std::string errorMessage = "PostgreSQL Error [" + std::string(reinterpret_cast<char*>(sqlState)) + "]: " + std::string(reinterpret_cast<char*>(errorMsg));
-        throw std::runtime_error(errorMessage);
-      } 
-
-      SQLCHAR name[256];
-
-      // Привязываем столбцы результата к переменным
-      SQLBindCol(hStmt, 2, SQL_C_CHAR, name, sizeof(name), NULL);
-
-      // Извлекаем данные из результирующего набора
-      SQLFetch(hStmt);
-      std::string strName(reinterpret_cast<char*>(name));
+      string insertQuery = "INSERT INTO breeds (name) VALUES ('" + name + "') RETURNING id, name";
+      SQLRETURN sqlReturn = SQLExecDirect(hStmt, (SQLCHAR*)insertQuery.c_str(), SQL_NTS);
+      handleSQLReturn(sqlReturn, hStmt);
+      
+      vector<vector<string>> result = fetchData(hStmt);
 
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
-
-      return Breed(id, strName);
+      return result;
     }
 
-    vector<Breed> findByName(string name) {
+    vector<vector<string>> get(int id) {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      SQLCHAR* selectQuery = (SQLCHAR*)"SELECT * FROM breeds WHERE name = ?";
-      SQLPrepare(hStmt, selectQuery, SQL_NTS);
+      string selectQuery = "SELECT id, name FROM breeds WHERE id = " + to_string(id);
+      SQLRETURN sqlReturn = SQLExecDirect(hStmt, (SQLCHAR*)selectQuery.c_str(), SQL_NTS);
+      handleSQLReturn(sqlReturn, hStmt);
 
-      const SQLCHAR* sqlName = reinterpret_cast<const SQLCHAR*>(name.c_str());
-      SQLBindParameter(hStmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (SQLPOINTER)sqlName, 0, NULL);
-
-      if (SQLExecute(hStmt) != SQL_SUCCESS) {
-        SQLCHAR sqlState[6];
-        SQLCHAR errorMsg[SQL_MAX_MESSAGE_LENGTH];
-        SQLINTEGER nativeError;
-        SQLSMALLINT errorMsgLen;
-
-        SQLGetDiagRec(SQL_HANDLE_STMT, hStmt, 1, sqlState, &nativeError, errorMsg, SQL_MAX_MESSAGE_LENGTH, &errorMsgLen);
-
-        // Construct a runtime_error with the PostgreSQL error message
-        std::string errorMessage = "PostgreSQL Error [" + std::string(reinterpret_cast<char*>(sqlState)) + "]: " + std::string(reinterpret_cast<char*>(errorMsg));
-        throw std::runtime_error(errorMessage);
-      } 
-
-      vector<Breed> breeds;
-
-      SQLINTEGER id;
-      SQLCHAR sdlName[256];
-
-      // Привязываем столбцы результата к переменным
-      SQLBindCol(hStmt, 1, SQL_C_SLONG, &id, sizeof(id), NULL);
-      SQLBindCol(hStmt, 2, SQL_C_CHAR, sdlName, sizeof(sdlName), NULL);
-
-      // Извлекаем данные из результирующего набора
-      while(SQLFetch(hStmt) == SQL_SUCCESS) {
-        std::string strName(reinterpret_cast<char*>(sdlName));
-        Breed breed = Breed(id, strName);
-        breeds.push_back(breed);
-      }
+      vector<vector<string>> result = fetchData(hStmt);
 
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
-
-      return breeds;
+      return result;
     }
 
-
-    vector<Breed> getAll() {
+    vector<vector<string>> findByName(string name) {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      SQLCHAR* selectQuery = (SQLCHAR*)"SELECT * FROM breeds;";
-      SQLPrepare(hStmt, selectQuery, SQL_NTS);
+      string selectQuery = "SELECT id, name FROM breeds WHERE name = '" + name + "'";
+      SQLRETURN sqlReturn = SQLExecDirect(hStmt, (SQLCHAR*)selectQuery.c_str(), SQL_NTS);
+      handleSQLReturn(sqlReturn, hStmt);
 
-      if (SQLExecute(hStmt) != SQL_SUCCESS) {
-        SQLCHAR sqlState[6];
-        SQLCHAR errorMsg[SQL_MAX_MESSAGE_LENGTH];
-        SQLINTEGER nativeError;
-        SQLSMALLINT errorMsgLen;
-
-        SQLGetDiagRec(SQL_HANDLE_STMT, hStmt, 1, sqlState, &nativeError, errorMsg, SQL_MAX_MESSAGE_LENGTH, &errorMsgLen);
-
-        // Construct a runtime_error with the PostgreSQL error message
-        std::string errorMessage = "PostgreSQL Error [" + std::string(reinterpret_cast<char*>(sqlState)) + "]: " + std::string(reinterpret_cast<char*>(errorMsg));
-        throw std::runtime_error(errorMessage);
-      } 
-
-      vector<Breed> breeds;
-
-      SQLINTEGER id;
-      SQLCHAR name[256];
-
-      // Привязываем столбцы результата к переменным
-      SQLBindCol(hStmt, 1, SQL_C_SLONG, &id, sizeof(id), NULL);
-      SQLBindCol(hStmt, 2, SQL_C_CHAR, name, sizeof(name), NULL);
-
-      // Извлекаем данные из результирующего набора
-      while (SQLFetch(hStmt) == SQL_SUCCESS) {
-        std::string strName(reinterpret_cast<char*>(name));
-        Breed breed = Breed(id, strName);
-        breeds.push_back(breed);
-      }
+      vector<vector<string>> result = fetchData(hStmt);
 
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
-      return breeds;
+      return result;
     }
 
-    Breed update(int id, string name) {
+
+    vector<vector<string>> getAll() {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      SQLCHAR* updateQuery = (SQLCHAR*)"UPDATE breeds SET name = ? WHERE id = ?";
-      SQLPrepare(hStmt, updateQuery, SQL_NTS);
+      string selectQuery = "SELECT id, name FROM breeds";
+      SQLRETURN sqlReturn = SQLExecDirect(hStmt, (SQLCHAR*)selectQuery.c_str(), SQL_NTS);
+      handleSQLReturn(sqlReturn, hStmt);
 
-      // Задайте параметры для обновления
-      const SQLCHAR* sqlName = reinterpret_cast<const SQLCHAR*>(name.c_str());
-      SQLBindParameter(hStmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 255, 0, (SQLPOINTER)sqlName, 0, NULL);
-      SQLBindParameter(hStmt, 2, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &id, 0, NULL);
-
-      if (SQLExecute(hStmt) != SQL_SUCCESS) {
-        SQLCHAR sqlState[6];
-        SQLCHAR errorMsg[SQL_MAX_MESSAGE_LENGTH];
-        SQLINTEGER nativeError;
-        SQLSMALLINT errorMsgLen;
-
-        SQLGetDiagRec(SQL_HANDLE_STMT, hStmt, 1, sqlState, &nativeError, errorMsg, SQL_MAX_MESSAGE_LENGTH, &errorMsgLen);
-
-        // Construct a runtime_error with the PostgreSQL error message
-        std::string errorMessage = "PostgreSQL Error [" + std::string(reinterpret_cast<char*>(sqlState)) + "]: " + std::string(reinterpret_cast<char*>(errorMsg));
-        throw std::runtime_error(errorMessage);
-      } 
-
+      vector<vector<string>> result = fetchData(hStmt);
 
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
+      return result;
+    }
 
-      return Breed(id, name);
+    vector<vector<string>> update(int id, string name) {
+      SQLHSTMT hStmt;
+      SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
+
+      string updateQuery = "UPDATE breeds SET name = '" + name + "' WHERE id = " + to_string(id) + " RETURNING id, name";
+      SQLRETURN sqlReturn = SQLExecDirect(hStmt, (SQLCHAR*)updateQuery.c_str(), SQL_NTS);
+      handleSQLReturn(sqlReturn, hStmt);
+      
+      vector<vector<string>> result = fetchData(hStmt);
+
+      SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
+      return result;
     }
 
     void remove(int id) {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      SQLCHAR* deleteQuery = (SQLCHAR*)"DELETE FROM breeds WHERE id = ?";
-      SQLPrepare(hStmt, deleteQuery, SQL_NTS);
-
-      SQLBindParameter(hStmt, 1, SQL_PARAM_INPUT, SQL_C_SLONG, SQL_INTEGER, 0, 0, &id, 0, NULL);
-
-      if (SQLExecute(hStmt) != SQL_SUCCESS) {
-        SQLCHAR sqlState[6];
-        SQLCHAR errorMsg[SQL_MAX_MESSAGE_LENGTH];
-        SQLINTEGER nativeError;
-        SQLSMALLINT errorMsgLen;
-
-        SQLGetDiagRec(SQL_HANDLE_STMT, hStmt, 1, sqlState, &nativeError, errorMsg, SQL_MAX_MESSAGE_LENGTH, &errorMsgLen);
-
-        // Construct a runtime_error with the PostgreSQL error message
-        std::string errorMessage = "PostgreSQL Error [" + std::string(reinterpret_cast<char*>(sqlState)) + "]: " + std::string(reinterpret_cast<char*>(errorMsg));
-        throw std::runtime_error(errorMessage);
-      } 
+      string deleteQuery = "DELETE FROM breeds WHERE id = " + to_string(id);
+      SQLRETURN sqlReturn = SQLExecDirect(hStmt, (SQLCHAR*)deleteQuery.c_str(), SQL_NTS);
+      handleSQLReturn(sqlReturn, hStmt);
 
       SQLFreeHandle(SQL_HANDLE_STMT, hStmt);
     }
