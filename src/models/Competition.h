@@ -8,6 +8,8 @@ class Competition {
 
   public:
 
+    Competition() {}
+
     Competition(int id, string name, string location, tm date) {
       this->id = id;
       this->name = name;

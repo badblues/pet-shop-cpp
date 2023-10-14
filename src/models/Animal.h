@@ -10,6 +10,8 @@ class Animal {
 
   public:
 
+    Animal() {}
+    
     Animal(int id, string name, optional<int> age, Gender gender, int breedId, string exterior,
            string pedigree, string veterinarian, optional<int> ownerId) {
       this->id = id;

@@ -37,168 +37,95 @@ class Menu {
 
     void showMenu() {
       int choice;
+      int id;
       while (menuRunning) {
         innerMenuRunning = true;
         cout << "\033[2J\033[H";
         cout << "Menu:\n" <<
-                "1. To clients base\n" <<
-                "2. To breeds base\n" <<
-                "3. To employees base\n" <<
-                "4. To applications\n" <<
-                "5. To animals\n" <<
-                "6. To competitions\n" <<
+                "1. List clients\n" <<
+                "2. List animals\n" <<
+                "3. List employees\n" <<
+                "4. List competitions\n" <<
+                "5. List applications\n" <<
+                "6. List breeds\n" <<
+                "7. Select client\n" <<
+                "8. Select animal\n" <<
+                "9. Select employee\n" <<
+                "10. Select competition\n" <<
+                "11. Select application\n" <<
+                "12. Select breed\n" <<
+                "13. Add new\n" << 
                 "0. Exit\n";
-        choice = getChoice(0, 6);
-        switch(choice){
-          case 1:  //clients menu
-            while(innerMenuRunning) {
-              cout << "\033[2J\033[H";
-              cout << "Clients menu:\n" << 
-                      "1. List clients\n" <<
-                      "2. New client\n" <<
-                      "3. Change client's name\n" <<
-                      "4. Change client's address\n" <<
-                      "5. Delete client\n" <<
-                      "0. Back\n";
-              choice = getChoice(0, 5);
-              switch(choice) {
-                case 1:
-                  listClients();
-                  break;
-                case 2:
-                  addClient();
-                  break;
-                case 3:
-                  changeClientName();
-                  break;
-                case 4:
-                  changeClientAddress();
-                  break;
-                case 5:
-                  removeClient();
-                  break;
-                case 0:
-                  innerMenuRunning = false;
-                  break;
-              }
-            }
+        choice = getChoice(0, 13);
+        switch(choice) {
+          case 1:
+            listClients();
             break;
-          case 2: //breeds menu
-            while(innerMenuRunning) {
-              cout << "\033[2J\033[H";
-              cout << "Breed menu:\n" << 
-                      "1. List breeds\n" <<
-                      "2. New breed\n" <<
-                      "3. Change breed's name\n" <<
-                      "4. Delete breed\n" <<
-                      "0. Back\n";
-              choice = getChoice(0, 4);
-              switch(choice) {
-                case 1:
-                  listBreeds();
-                  break;
-                case 2:
-                  addBreed();
-                  break;
-                case 3:
-                  changeBreedName();
-                  break;
-                case 4:
-                  removeBreed();
-                  break;
-                case 0:
-                  innerMenuRunning = false;
-                  break;
-              }
-            }
+          case 2:
+            listAnimals();
             break;
           case 3:
+            listEmployees();
+            break;
+          case 4:
+            listCompetitions();
+            break;
+          case 5:
+            listApplications();
+            break;
+          case 6:
+            listBreeds();
+            break;
+          case 7:
+            id = inputClientId();
+            if (id == -1)
+              break;
+            currentClient = clientRepository.get(id);
             while(innerMenuRunning) {
               cout << "\033[2J\033[H";
-              cout << "Employees menu:\n" << 
-                      "1. List employees\n" <<
-                      "2. New employee\n" <<
-                      "3. Change employee's name\n" <<
-                      "4. Change employee's address\n" <<
-                      "5. Change employee's position\n" <<
-                      "6. Change employee's salary\n" <<
-                      "7. Delete employee\n" <<
-                      "8. Find by position\n" <<
-                      "0. Back\n";
+              printClient(currentClient);
+              cout << "1. Change name\n"
+                   << "2. Change address\n"
+                   << "3. List animals\n"
+                   << "4. Assign animal\n"
+                   << "5. List applications\n"
+                   << "6. Add application\n"
+                   << "7. Change gender in application\n"
+                   << "8. Change breed in application\n"
+                   << "9. Delete application\n"
+                   << "10. Delete client (with applications and animals)\n"
+                   << "0. Back\n";
               choice = getChoice(0, 8);
               switch(choice) {
                 case 1:
-                  listEmployees();
+                  changeClientName();
                   break;
                 case 2:
-                  addEmployee();
+                  changeClientAddress();
                   break;
                 case 3:
-                  changeEmployeeName();
+                  listAnimalsByClient();
                   break;
                 case 4:
-                  changeEmployeeAddress();
+                  assignAnimal();
                   break;
                 case 5:
-                  changeEmployeePosition();
-                  break;
-                case 6:
-                  changeEmployeeSalary();
-                  break;
-                case 7:
-                  removeEmployee();
-                  break;
-                case 8:
-                  findEmployeeByPosition();
-                  break;
-                case 0:
-                  innerMenuRunning = false;
-                  break;
-              }
-            }
-            break;
-          case 4:
-            while(innerMenuRunning) {
-              cout << "\033[2J\033[H";
-              cout << "Applications menu:\n" << 
-                      "1. List applications\n" <<
-                      "2. New application\n" <<
-                      "3. Change breed in application\n" <<
-                      "4. Change gender in application\n" <<
-                      "5. Close application\n" <<
-                      "6. Delete application\n" <<
-                      "7. Find by client\n" <<
-                      "8. Find by employee\n" <<
-                      "9. Find by breed\n" <<
-                      "0. Back\n";
-              choice = getChoice(0, 9);
-              switch(choice) {
-                case 1:
-                  listApplications();
-                  break;
-                case 2:
-                  addApplication();
-                  break;
-                case 3:
-                  changeApplicationBreed();
-                  break;
-                case 4:
-                  changeApplicationGender();
-                  break;
-                case 5:
-                  closeApplication();
-                  break;
-                case 6:
-                  removeApplication();
-                  break;
-                case 7:
                   listApplicationsByClient();
                   break;
-                case 8:
-                  listApplicationsByEmployee();
+                case 6:
+                  addApplication();
                   break;
-                case 9:
-                  listApplicationsByBreed();
+                case 7:
+                  changeApplicationGender();
+                  break;
+                case 8:
+                  changeApplicationBreed();
+                  break;
+                case 9: 
+                  removeApplication();
+                case 10:
+                  removeClient();
+                  innerMenuRunning = false;
                   break;
                 case 0:
                   innerMenuRunning = false;
@@ -206,105 +133,31 @@ class Menu {
               }
             }
             break;
-          case 5:
+          case 13:
             while(innerMenuRunning) {
               cout << "\033[2J\033[H";
-              cout << "Animals menu:\n" << 
-                      "1. List animals\n" <<
-                      "2. New animal\n" <<
-                      "3. Change name\n" <<
-                      "4. Change age\n" <<
-                      "5. Change gender\n" <<
-                      "6. Change breed\n" <<
-                      "7. Change exterior\n" <<
-                      "8. Change pedigree\n" <<
-                      "9. Change veterinarian\n" <<
-                      "10. Change owner\n" <<
-                      "11. Delete animal\n" <<
-                      "12. Find animals by breed\n" <<
-                      "13. Find animals by owner\n" <<
-                      "0. Back\n";
-              choice = getChoice(0, 13);
+              cout << "1. Client\n"
+                   << "2. Animal\n"
+                   << "3. Competition\n"
+                   << "4. Employee\n"
+                   << "5. Breed\n"
+                   << "0. Back\n";
+              choice = getChoice(0, 5);
               switch(choice) {
                 case 1:
-                  listAnimals();
+                  addClient();
                   break;
                 case 2:
                   addAnimal();
                   break;
                 case 3:
-                  changeAnimalName();
-                  break;
-                case 4:
-                  changeAnimalAge();
-                  break;
-                case 5:
-                  changeAnimalGender();
-                  break;
-                case 6:
-                  changeAnimalBreed();
-                  break;
-                case 7:
-                  changeAnimalExterior();
-                  break;
-                case 8:
-                  changeAnimalPedigree();
-                  break;
-                case 9:
-                  changeAnimalVeterinarian();
-                  break;
-                case 10:
-                  changeAnimalOwner();
-                  break;
-                case 11:
-                  removeAnimal();
-                  break;
-                case 12:
-                  listAnimalsByBreed();
-                  break;
-                case 13:
-                  listAnimalsByOwner();
-                  break;
-                case 0:
-                  innerMenuRunning = false;
-                  break;
-              }
-            }
-            break;
-          case 6:
-            while(innerMenuRunning) {
-              cout << "\033[2J\033[H";
-              cout << "Competitions menu:\n" << 
-                      "1. List competitions\n" <<
-                      "2. New competition\n" <<
-                      "3. Change competition name\n" <<
-                      "4. Change competition location\n" <<
-                      "5. Change competition date\n" <<
-                      "6. Delete competition\n" <<
-                      "7. Find by name\n" <<
-                      "0. Back\n";
-              choice = getChoice(0, 7);
-              switch(choice) {
-                case 1:
-                  listCompetitions();
-                  break;
-                case 2:
                   addCompetition();
                   break;
-                case 3:
-                  changeCompetitionName();
-                  break;
                 case 4:
-                  changeCompetitionLocation();
+                  addEmployee();
                   break;
                 case 5:
-                  changeCompetitionDate();
-                  break;
-                case 6:
-                  removeCompetition();
-                  break;
-                case 7:
-                  findCompetitionByName();
+                  addBreed();
                   break;
                 case 0:
                   innerMenuRunning = false;
@@ -331,6 +184,12 @@ class Menu {
     CompetitionRepository competitionRepository;
     ParticipationRepository participationRepository;
 
+    Client currentClient;
+    Animal currentAnimal;
+    Employee currentEmployee;
+    Competition currentCompetition;
+    Breed currentBreed;
+
     bool menuRunning = true;
     bool innerMenuRunning = true;
 
@@ -349,6 +208,9 @@ class Menu {
     void addClient();
     void changeClientName();
     void changeClientAddress();
+    void listAnimalsByClient();
+    void listApplicationsByClient();
+    void assignAnimal();
     void removeClient();
     void deleteClient(int id);
     void printClients(vector<Client> clients);
@@ -372,7 +234,6 @@ class Menu {
     void changeEmployeeSalary();
     void removeEmployee();
     void deleteEmployee(int id);
-    void findEmployeeByPosition();
     void printEmployees(vector<Employee> employees);
     void printEmployee(Employee employee);
     int inputEmployeeId();
@@ -384,9 +245,6 @@ class Menu {
     void closeApplication();
     void removeApplication();
     void deleteApplication(int id);
-    void listApplicationsByClient();
-    void listApplicationsByEmployee();
-    void listApplicationsByBreed();
     void printApplications(vector<Application> applications);
     void printApplication(Application application);
     int inputApplicationId();
@@ -404,8 +262,6 @@ class Menu {
     void changeAnimalOwner();
     void removeAnimal();
     void deleteAnimal(int id);
-    void listAnimalsByBreed();
-    void listAnimalsByOwner();
     void printAnimals(vector<Animal> animals);
     void printAnimal(Animal animal);
     optional<int> inputAge();
@@ -420,9 +276,6 @@ class Menu {
     void changeCompetitionAward();
     void removeCompetition();
     void deleteCompetition(int id);
-    void findCompetitionByAnimal();
-    void findCompetitionByAward();
-    void findCompetitionByName();
     void printCompetitions(vector<Competition> competitions);
     void printCompetition(Competition competition);
     int inputCompetitionId();

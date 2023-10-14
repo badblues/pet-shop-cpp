@@ -8,6 +8,8 @@ class Client {
 
   public:
 
+    Client() {}
+
     Client(int id, string name, string address) {
       this->id = id;
       this->name = name;

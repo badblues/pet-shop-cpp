@@ -8,6 +8,8 @@ class Employee {
 
   public:
 
+    Employee() {}
+
     Employee(int id, string name, string address, string position, double salary) {
       this->id = id;
       this->name = name;

@@ -10,6 +10,8 @@ class Application {
 
   public:
 
+    Application() {}
+
     Application(int id, int clientId, optional<int> employeeId, int breedId, optional<Gender> gender, tm applicationDate, bool completed) {
       this->id = id;
       this->clientId = clientId;

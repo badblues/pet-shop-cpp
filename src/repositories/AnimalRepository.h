@@ -65,10 +65,6 @@ class AnimalRepository {
     }
 
     Animal parseAnimal(vector<string> strings) {
-      cout << "aboaba ||\n";
-      for (int i = 0; i < strings.size(); i++)
-        cout << strings[i] << "\n";
-      cout << "aboaba ||\n";
       int id = atoi(strings[0].c_str());
       string name = strings[1];
       optional<int> age;

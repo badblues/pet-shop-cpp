@@ -33,15 +33,12 @@ void Menu::addClient() {
 }
 
 void Menu::changeClientName() {
-  int id = inputClientId();
-  if (id == -1)
-    return;
+  int id = currentClient.getId();
   string name;
   cout << "Enter new name:\n";
   getline(cin, name);
   try {
-    Client oldClient = clientRepository.get(id);
-    string address = oldClient.getAddress();
+    string address = currentClient.getAddress();
     Client updatedClient = clientRepository.update(id, name, address);
     cout << "Success!\n";
     printClient(updatedClient);
@@ -53,15 +50,12 @@ void Menu::changeClientName() {
 }
 
 void Menu::changeClientAddress() {
-  int id = inputClientId();
-  if (id == -1)
-    return;
+  int id = currentClient.getId();
   string address;
   cout << "Enter new address:\n";
   getline(cin, address);
   try {
-    Client oldClient = clientRepository.get(id);
-    string name = oldClient.getName();
+    string name = currentClient.getName();
     Client updatedClient = clientRepository.update(id, name, address);
     cout << "Success!\n";
     printClient(updatedClient);
@@ -72,10 +66,60 @@ void Menu::changeClientAddress() {
   }
 }
 
-void Menu::removeClient() {
-  int id = inputClientId();
-  if (id == -1)
+void Menu::listAnimalsByClient() {
+  optional<int> ownerId = currentClient.getId();
+  try {
+    vector<Animal> animals = animalRepository.findByClientId(ownerId);
+    cout << "\033[2J\033[H";
+    printAnimals(animals);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
+void Menu::listApplicationsByClient() {
+  int id = currentClient.getId();
+  try {
+    vector<Application> applications = applicationRepository.findByClientId(id);
+    cout << "\033[2J\033[H";
+    printApplications(applications);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
+void Menu::assignAnimal() {
+  int clientId = currentClient.getId();
+  int animalId = inputAnimalId();
+  if (animalId == -1)
     return;
+  try {
+    Animal oldAnimal = animalRepository.get(animalId);
+    string name = oldAnimal.getName();
+    optional<int> age;
+    if (oldAnimal.getAge().has_value())
+      age = oldAnimal.getAge().value();
+    Gender gender = oldAnimal.getGender(); 
+    int breedId = oldAnimal.getBreedId();
+    string exterior = oldAnimal.getExterior();
+    string pedigree = oldAnimal.getPedigree();
+    string veterinarian = oldAnimal.getVeterinarian();
+    Animal updatedAnimal = animalRepository.update(animalId, name, age, gender, breedId, exterior, pedigree, veterinarian, clientId);
+    cout << "Success!\n";
+    printAnimal(updatedAnimal);
+    getchar();
+  } catch(const exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+  }
+}
+
+void Menu::removeClient() {
+  int id = currentClient.getId();
   try {
     deleteClient(id);
   } catch(const exception& e) {
@@ -101,7 +145,8 @@ void Menu::printClients(vector<Client> clients) {
   if (clients.size() == 0)
     cout << "No clients found\n";
   for (int i = 0; i < clients.size(); i++) {
-    cout << i + 1 << ". Name: " << clients[i].getName() << ", Address: " << clients[i].getAddress() << "\n";
+    cout << i + 1 << ". ";
+    printClient(clients[i]);
   }
 }
 
@@ -111,11 +156,8 @@ void Menu::printClient(Client client) {
 
 int Menu::inputClientId() {
   string name;
-  cout << "Enter client's name (leave empty to go back):\n";
+  cout << "Enter client's name:\n";
   getline(cin, name);
-  if (name == "") {
-    return -1;
-  }
   vector<Client> clients = clientRepository.findByName(name);
   if (clients.size() == 0) {
     cout << "Client with that name wasn't found\n";
@@ -123,13 +165,10 @@ int Menu::inputClientId() {
     return -1;
   }
   int id;
-  for (int i = 0; i < clients.size(); i++) {
-    cout << i + 1 << ". " << clients[i].getName() << ", address: " << clients[i].getAddress() << "\n";
-  }
+  printClients(clients);
   cout << "Choose client\n";
   int choice = getChoice(1, clients.size());
-  id = clients[choice - 1].getId();
-  return id;
+  return clients[choice - 1].getId();
 }
 
 //BREEDS
@@ -205,11 +244,10 @@ void Menu::deleteBreed(int id) {
 }
 
 void Menu::printBreeds(vector<Breed> breeds) {
-    cout << "Breeds:\n";
-  if (breeds.size() == 0)
-    cout << "No breeds found\n";
+  cout << "Breeds:\n";
   for (int i = 0; i < breeds.size(); i++) {
-    cout << i + 1 << ". Name: " << breeds[i].getName() << "\n";
+    cout << i + 1 << ". ";
+    printBreed(breeds[i]);
   }
 }
 
@@ -235,11 +273,32 @@ int Menu::inputBreedId() {
 //EMPLOYEES
 
 void Menu::listEmployees() {
+  cout << "1. All\n"
+       << "2. By position\n"
+       << "0. Back\n";
+  int choice = getChoice(0, 2);
+  vector<Employee> employees;
+  string position;
   try {
-    vector<Employee> employees = employeeRepository.getAll();
-    cout << "\033[2J\033[H";
-    printEmployees(employees);
-    getchar();
+    switch(choice) {
+      case 1:
+        employees = employeeRepository.getAll();
+        cout << "\033[2J\033[H";
+        printEmployees(employees);
+        getchar();
+        break;
+      case 2:
+        position;
+        cout << "Enter position:\n";
+        getline(cin, position);
+        employees = employeeRepository.findByPosition(position);
+        cout << "\033[2J\033[H";
+        printEmployees(employees);
+        getchar();
+        break;
+      case 0:
+        return;
+    }
   } catch(const exception& e) {
     cout << e.what() << "\n";
     getchar();
@@ -380,31 +439,13 @@ void Menu::deleteEmployee(int id) {
   getchar();
 }
 
-void Menu::findEmployeeByPosition() {
-  try {
-    string position;
-    cout << "Enter position:\n";
-    getline(cin, position);
-    vector<Employee> employees = employeeRepository.findByPosition(position);
-    cout << "\033[2J\033[H";
-    printEmployees(employees);
-    getchar();
-  } catch(const exception& e) {
-    cout << e.what() << "\n";
-    getchar();
-  }
-}
-
 void Menu::printEmployees(vector<Employee> employees) {
   cout << "Employess:\n";
   if (employees.size() == 0)
     cout << "No employees found\n";
   for (int i = 0; i < employees.size(); i++) {
-    cout << i + 1 << ". Name: " << employees[i].getName()
-          << ", Address: " << employees[i].getAddress()
-          << ", Position: " << employees[i].getPosition()
-          << ", Salary: " << employees[i].getSalary() << "₽"
-          << "\n";
+    cout << i + 1 << ". ";
+    printEmployee(employees[i]);
   }
 }
 
@@ -445,11 +486,42 @@ int Menu::inputEmployeeId() {
 //APPLICATIONS
 
 void Menu::listApplications() {
+  cout << "1. All\n"
+       << "2. By employee\n"
+       << "3. By breed\n"
+       << "0. Back\n";
+  int choice = getChoice(0, 3);
+  vector<Application> applications;
+  optional<int> employeeId;
+  int breedId;
   try {
-    vector<Application> applications = applicationRepository.getAll();
-    cout << "\033[2J\033[H";
-    printApplications(applications);
-    getchar();
+    switch (choice) {
+    case 1:
+      applications = applicationRepository.getAll();
+      cout << "\033[2J\033[H";
+      printApplications(applications);
+      getchar();
+      break;
+    case 2:
+      cout << "Employee:\n1. Isn't null\n2. Is null\n";
+      choice = getChoice(1,2);
+      if (choice == 1)
+        employeeId = inputEmployeeId();
+      applications = applicationRepository.findByEmployeeId(employeeId);
+      cout << "\033[2J\033[H";
+      printApplications(applications);
+      getchar();
+      break;
+    case 3:
+      breedId = inputBreedId();
+      applications = applicationRepository.findByBreedId(breedId);
+      cout << "\033[2J\033[H";
+      printApplications(applications);
+      getchar();
+      break;
+    case 0:
+      return;
+    }
   } catch(const exception& e) {
     cout << e.what() << "\n";
     getchar();
@@ -457,9 +529,7 @@ void Menu::listApplications() {
 }
 
 void Menu::addApplication() {
-  int clientId = inputClientId();
-  if (clientId == -1)
-    return;
+  int clientId = currentClient.getId();
   int employeeId = inputEmployeeId();
   if (employeeId == -1)
     return;
@@ -469,7 +539,6 @@ void Menu::addApplication() {
   optional<Gender> gender = inputGender();
   time_t currentTime = time(nullptr);
   tm applicationDate = *localtime(&currentTime);
-
   try {
     Application application = applicationRepository.add(clientId, employeeId, breedId, gender, applicationDate, false);
     cout << "Success!\n";
@@ -591,75 +660,13 @@ void Menu::deleteApplication(int id) {
   getchar();
 }
 
-void Menu::listApplicationsByClient() {
-  int id = inputClientId();
-  try {
-    vector<Application> applications = applicationRepository.findByClientId(id);
-    cout << "\033[2J\033[H";
-    printApplications(applications);
-    getchar();
-  } catch(const exception& e) {
-    cout << e.what() << "\n";
-    getchar();
-  }
-}
-
-
-void Menu::listApplicationsByEmployee() {
-  cout << "Employee:\n1. Isn't null\n2. Is null\n";
-  int choice = getChoice(1,2);
-  optional<int> employeeId;
-  if (choice == 1)
-    employeeId = inputEmployeeId();
-  try {
-    vector<Application> applications = applicationRepository.findByEmployeeId(employeeId);
-    cout << "\033[2J\033[H";
-    printApplications(applications);
-    getchar();
-  } catch(const exception& e) {
-    cout << e.what() << "\n";
-    getchar();
-  }
-}
-
-void Menu::listApplicationsByBreed() {
-  int id = inputBreedId();
-  try {
-    vector<Application> applications = applicationRepository.findByBreedId(id);
-    cout << "\033[2J\033[H";
-    printApplications(applications);
-    getchar();
-  } catch(const exception& e) {
-    cout << e.what() << "\n";
-    getchar();
-  }
-}
-
 void Menu::printApplications(vector<Application> applications) {
   cout << "Applications:\n";
   if (applications.size() == 0)
     cout << "No applications found\n";
   for (int i = 0; i < applications.size(); i++) {
-    string clientName = clientRepository.get(applications[i].getClientId()).getName();
-    string employeeName = "";
-    optional<int> employeeId = applications[i].getEmployeeId();
-    if (employeeId.has_value())
-    employeeName = employeeRepository.get(employeeId.value()).getName();
-    string breed = breedRepository.get(applications[i].getBreedId()).getName();
-    string genderStr = "";
-    optional<Gender> gender = applications[i].getGender();
-    if (gender.has_value())
-      genderStr = gender.value() == Gender::male ? "male" : "female";
-    tm applicationDate = applications[i].getApplicationDate();
-    stringstream dateStream;
-    dateStream << put_time(&applicationDate, "%Y-%m-%d");
-    cout << i + 1 << ". Client's name: " << clientName
-          << ", Employee: " << employeeName
-          << ", Animal breed: " << breed
-          << ", Animal gender: " << genderStr
-          << ", Filling date: " << dateStream.str()
-          << ", Completed: " << applications[i].getCompleted()
-          << "\n";
+    cout << i + 1 << ". ";
+    printApplication(applications[i]);
     }
 }
 
@@ -687,35 +694,10 @@ void Menu::printApplication(Application application) {
 }
 
 int Menu::inputApplicationId() {
-  cout << "Find application by:\n"
-       << "1. Client\n"
-       << "2. Employee\n"
-       << "3. Breed\n"
-       << "0. Go back\n";
-
-  int choice = getChoice(0, 3);
-  int id;
+  int id = currentClient.getId();
   vector<Application> applications;
   try {
-    switch(choice) {
-      case 1:
-        id = inputClientId();
-        applications = applicationRepository.findByClientId(id);
-        break;
-      case 2:
-        id = inputEmployeeId();
-        applications = applicationRepository.findByEmployeeId(id);
-        break;
-      case 3:
-        id = inputBreedId();
-        applications = applicationRepository.findByBreedId(id);
-        break;
-      case 0:
-        return -1;
-        break;
-    }
-    if (id == -1)
-      return -1;
+    applications = applicationRepository.findByClientId(id);
   } catch (exception& e) {
     cout << e.what() << "\n";
     getchar();
@@ -729,7 +711,7 @@ int Menu::inputApplicationId() {
   cout << "Applications:\n";
   printApplications(applications);
   cout << "Choose application\n";
-  choice = getChoice(1, applications.size());
+  int choice = getChoice(1, applications.size());
   id = applications[choice - 1].getId();
   return id;
 }
@@ -751,11 +733,32 @@ optional<Gender> Menu::inputGender() {
 // ANIMALS
 
 void Menu::listAnimals() {
+  cout << "1. All\n"
+       << "2. By breed\n"
+       << "0. Back\n";
+  int choice = getChoice(0, 2);
+  vector<Animal> animals;
+  int breedId;
   try {
-    vector<Animal> animals = animalRepository.getAll();
-    cout << "\033[2J\033[H";
-    printAnimals(animals);
-    getchar();
+    switch (choice)
+    {
+    case 1:
+      animals = animalRepository.getAll();
+      cout << "\033[2J\033[H";
+      printAnimals(animals);
+      getchar();
+      break;
+    case 2:
+      breedId = inputBreedId();
+      if (breedId == -1)
+        return;
+      animals = animalRepository.findByBreedId(breedId);
+      cout << "\033[2J\033[H";
+      printAnimals(animals);
+      getchar();
+    case 0:
+      return;
+    }
   } catch(const exception& e) {
     cout << e.what() << "\n";
     getchar();
@@ -1056,41 +1059,6 @@ void Menu::deleteAnimal(int id) {
   getchar();
 }
 
-void Menu::listAnimalsByBreed() {
-  int breedId = inputBreedId();
-  if (breedId == -1)
-    return;
-  try {
-    vector<Animal> animals = animalRepository.findByBreedId(breedId);
-    cout << "\033[2J\033[H";
-    printAnimals(animals);
-    getchar();
-  } catch(const exception& e) {
-    cout << e.what() << "\n";
-    getchar();
-  }
-}
-
-void Menu::listAnimalsByOwner() {
-  optional<int> ownerId;
-  cout << "Owner:\n1.Has\n2.Has no\n";
-  int choice = getChoice(1, 2);
-  if (choice == 1) {
-    ownerId = inputClientId();
-    if (ownerId == -1)
-      return;
-  }
-  try {
-    vector<Animal> animals = animalRepository.findByClientId(ownerId);
-    cout << "\033[2J\033[H";
-    printAnimals(animals);
-    getchar();
-  } catch(const exception& e) {
-    cout << e.what() << "\n";
-    getchar();
-  }
-}
-
 void Menu::printAnimal(Animal animal) {
   string genderStr = animal.getGender() == Gender::male ? "male" : "female";
   string breedStr = breedRepository.get(animal.getBreedId()).getName();
@@ -1103,7 +1071,7 @@ void Menu::printAnimal(Animal animal) {
        << ", Exterior description: " << animal.getExterior()
        << ", Pedigree: " << animal.getPedigree()
        << ", Veterinarian: " << animal.getVeterinarian()
-       << ", Owner: " << ownerStr;
+       << ", Owner: " << ownerStr << "\n";
 }
 
 void Menu::printAnimals(vector<Animal> animals) {
@@ -1111,18 +1079,8 @@ void Menu::printAnimals(vector<Animal> animals) {
   if (animals.size() == 0)
     cout << "No animals found\n";
   for (int i = 0; i < animals.size(); i++) {
-    string genderStr = animals[i].getGender() == Gender::male ? "male" : "female";
-    string breedStr = breedRepository.get(animals[i].getBreedId()).getName();
-    optional<int> ownerId = animals[i].getOwnerId();
-    string ownerStr = ownerId.has_value() ? clientRepository.get(ownerId.value()).getName() : "";
-    cout << i + 1 << ". Name: " << animals[i].getName()
-        << ", Age: " << (animals[i].getAge().has_value() ? to_string(animals[i].getAge().value()) : "")
-        << ", Gender: " << genderStr
-        << ", Breed: " << breedStr
-        << ", Exterior description: " << animals[i].getExterior()
-        << ", Pedigree: " << animals[i].getPedigree()
-        << ", Veterinarian: " << animals[i].getVeterinarian()
-        << ", Owner: " << ownerStr << "\n";
+    cout << i + 1 << ". ";
+    printAnimal(animals[i]);
   }
 }
 
@@ -1319,33 +1277,14 @@ void Menu::deleteCompetition(int id) {
   getchar();
 }
 
-void Menu::findCompetitionByName() {
-  string name;
-  cout << "Enter name:\n";
-  getline(cin, name);
-  try {
-    vector<Competition> competitions = competitionRepository.findByName(name);
-    cout << "\033[2J\033[H";
-    cout << "Competitions:\n";
-    printCompetitions(competitions);
-    getchar();
-  } catch(const exception& e) {
-    cout << e.what() << "\n";
-    getchar();
-  }
-}
 
 void Menu::printCompetitions(vector<Competition> competitions) {
   cout << "Competitions:\n";
   if (competitions.size() == 0)
     cout << "No competitions found\n";
   for (int i = 0; i < competitions.size(); i++) {
-    stringstream dateStream;
-    tm date = competitions[i].getDate();
-    dateStream << put_time(&date, "%Y-%m-%d");
-    cout << i + 1 << ". Competition name: " << competitions[i].getName() <<
-            ", Location: " << competitions[i].getLocation() <<
-            ", Date: " << dateStream.str() << "\n";
+    cout << i + 1 << ". ";
+    printCompetition(competitions[i]);
   }
 }
 

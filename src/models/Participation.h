@@ -6,6 +6,8 @@ class Participation {
 
   public:
 
+    Participation() {}
+
     Participation(int animalId, int competitionId,string award) {
       this->animalId = animalId;
       this->competitionId = competitionId;

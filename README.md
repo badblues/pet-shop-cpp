@@ -5,12 +5,36 @@
 - операции в соответствии с семантикой варианта, без привязки к реляционной модели
 
 TODO:
-- многие ко многим между animal и competitions:
-- добавить репозитории, которые будут обрабатывать ответы от gateway
 - проверить правильно ли пробрасываются ошибки
 - сделать меню более удобным (выбираешь клиента, совершаешь операции с ним)
 - вывод вложенных ресурсов
 - проблема удаления соревнований или животных (наверное стоит удалить и участия)
+
+menu:
+  select client -> 
+    list animals
+    list applications
+  select animal ->
+    change data
+    add participation
+    list participations
+    delete
+  select competition ->
+    chagne data
+    add participation
+    list animals
+    delete
+  select employee ->
+    change data
+    delete
+  select breed ->
+    change data
+    delete
+  
+CRUD:
+  client ✓
+
+
 
 CREATE TABLE IF NOT EXISTS Breeds (
   id serial PRIMARY KEY,
