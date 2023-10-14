@@ -1380,7 +1380,7 @@ int Menu::inputCompetitionId() {
   cout << "Competitions:\n";
   printCompetitions(competitions);
   cout << "Choose competition\n";
-  choice = getChoice(1, competitions.size());
+  int choice = getChoice(1, competitions.size());
   id = competitions[choice - 1].getId();
   return id;
 }

@@ -38,6 +38,19 @@ void createTables(SQLHDBC hDbc) {
     "  veterinarian varchar(255) NOT NULL,"
     "  owner_id int REFERENCES Clients(id)"
     ");"
+    "CREATE TABLE IF NOT EXISTS Competitions ("
+    "  id serial PRIMARY KEY,"
+    "  animal_id int REFERENCES Animals(id) NOT NULL,"
+    "  name varchar(255) NOT NULL,"
+    "  location varchar(255) NOT NULL,"
+    "  date date NOT NULL"
+    ");"
+    "CREATE TABLE IF NOT EXISTS AnimalCompetitions ("
+    "  animal_id int REFERENCES Animals(id) NOT NULL,"
+    "  competition_id int REFERENCES Competitions(id) NOT NULL,"
+    "  award varchar(255) NOT NULL,"
+    "  PRIMARY KEY (animal_id, competition_id)"
+    ");"
     "CREATE TABLE IF NOT EXISTS Applications ("
     "  id serial PRIMARY KEY,"
     "  client_id int REFERENCES Clients(id) NOT NULL,"
@@ -47,14 +60,7 @@ void createTables(SQLHDBC hDbc) {
     "  application_date date NOT NULL,"
     "  completed boolean NOT NULL"
     ");"
-    "CREATE TABLE IF NOT EXISTS Competitions ("
-    "  id serial PRIMARY KEY,"
-    "  animal_id int REFERENCES Animals(id) NOT NULL,"
-    "  name varchar(255) NOT NULL,"
-    "  location varchar(255) NOT NULL,"
-    "  date date NOT NULL,"
-    "  award varchar(255) NOT NULL"
-    ");";
+    ;
 
   SQLRETURN sqlResult = SQLExecDirect(hStmt, (SQLCHAR*)createTablesSQL, SQL_NTS);
 

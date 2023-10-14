@@ -9,12 +9,14 @@
 #include "./repositories/ApplicationRepository.h"
 #include "./repositories/AnimalRepository.h"
 #include "./repositories/CompetitionRepository.h"
+#include "./repositories/ParticipationRepository.h"
 #include "./gateways/ClientDatabaseGateway.h"
 #include "./gateways/BreedDatabaseGateway.h"
 #include "./gateways/EmployeeDatabaseGateway.h"
 #include "./gateways/ApplicationDatabaseGateway.h"
 #include "./gateways/AnimalDatabaseGateway.h"
 #include "./gateways/CompetitionDatabaseGateway.h"
+#include "./gateways/ParticipationDatabaseGateway.h"
 
 using namespace std;
 
@@ -30,6 +32,7 @@ class Menu {
       applicationRepository = ApplicationRepository(ApplicationDatabaseGateway(hDbc));
       animalRepository = AnimalRepository(AnimalDatabaseGateway(hDbc));
       competitionRepository = CompetitionRepository(CompetitionDatabaseGateway(hDbc));
+      participationRepository = ParticipationRepository(ParticipationDatabaseGateway(hDbc));
     }
 
     void showMenu() {
@@ -326,6 +329,8 @@ class Menu {
     ApplicationRepository applicationRepository;
     AnimalRepository animalRepository;
     CompetitionRepository competitionRepository;
+    ParticipationRepository participationRepository;
+
     bool menuRunning = true;
     bool innerMenuRunning = true;
 
@@ -423,4 +428,5 @@ class Menu {
     int inputCompetitionId();
     optional<tm> inputDate();
 };
+
 
