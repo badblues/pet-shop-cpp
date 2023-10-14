@@ -52,11 +52,10 @@ class Menu {
                 "8. Select animal\n" <<
                 "9. Select employee\n" <<
                 "10. Select competition\n" <<
-                "11. Select application\n" <<
-                "12. Select breed\n" <<
-                "13. Add new\n" << 
+                "11. Select breed\n" <<
+                "12. Add new\n" << 
                 "0. Exit\n";
-        choice = getChoice(0, 13);
+        choice = getChoice(0, 12);
         switch(choice) {
           case 1:
             listClients();
@@ -133,7 +132,56 @@ class Menu {
               }
             }
             break;
-          case 13:
+          case 8:
+            id = inputAnimalId();
+            if (id == -1)
+              break;
+            currentAnimal = animalRepository.get(id);
+            while(innerMenuRunning) {
+            }
+            break;
+          case 9:
+            id = inputCompetitionId();
+            if (id == -1)
+              break;
+            currentCompetition = competitionRepository.get(id);
+            while(innerMenuRunning) {
+            }
+            break;
+          case 10:
+            id = inputEmployeeId();
+            if (id == -1)
+              break;
+            currentEmployee = employeeRepository.get(id);
+            while(innerMenuRunning) {
+            }
+            break;
+          case 11:
+            id = inputBreedId();
+            if (id == -1)
+              break;
+            currentBreed = breedRepository.get(id);
+            while(innerMenuRunning) {
+            cout << "\033[2J\033[H";
+              printBreed(currentBreed);
+              cout << "1. Change name\n"
+                   << "2. Delete breed\n"
+                   << "0. Back\n";
+              choice = getChoice(0, 2);
+              switch(choice) {
+                case 1:
+                  changeBreedName();
+                  break;
+                case 2:
+                  removeBreed();
+                  break;
+                case 0:
+                  innerMenuRunning = false;
+                  break;
+              }
+            }
+            break;
+          case 12:
             while(innerMenuRunning) {
               cout << "\033[2J\033[H";
               cout << "1. Client\n"

@@ -201,9 +201,7 @@ void Menu::addBreed() {
 }
 
 void Menu::changeBreedName() {
-  int id = inputBreedId();
-  if (id == -1)
-    return;
+  int id = currentBreed.getId();
   string name;
   cout << "Enter new name:\n";
   getline(cin, name);
@@ -219,9 +217,7 @@ void Menu::changeBreedName() {
 }
 
 void Menu::removeBreed() {
-  int id = inputBreedId();
-  if (id == -1)
-    return;
+  int id = currentBreed.getId();
   try {
     deleteBreed(id);
   } catch(const exception& e) {
