@@ -7,6 +7,8 @@
 #include "./repositories/BreedRepository.h"
 #include "./repositories/EmployeeRepository.h"
 #include "./repositories/ApplicationRepository.h"
+#include "./repositories/AnimalRepository.h"
+#include "./repositories/CompetitionRepository.h"
 #include "./gateways/ClientDatabaseGateway.h"
 #include "./gateways/BreedDatabaseGateway.h"
 #include "./gateways/EmployeeDatabaseGateway.h"
@@ -26,8 +28,8 @@ class Menu {
       breedRepository = BreedRepository(BreedDatabaseGateway(hDbc));
       employeeRepository = EmployeeRepository(EmployeeDatabaseGateway(hDbc));
       applicationRepository = ApplicationRepository(ApplicationDatabaseGateway(hDbc));
-      this->animalGateway = AnimalDatabaseGateway(hDbc);
-      this->competitionGateway = CompetitionDatabaseGateway(hDbc);
+      animalRepository = AnimalRepository(AnimalDatabaseGateway(hDbc));
+      competitionRepository = CompetitionRepository(CompetitionDatabaseGateway(hDbc));
     }
 
     void showMenu() {
@@ -275,13 +277,10 @@ class Menu {
                       "3. Change competition name\n" <<
                       "4. Change competition location\n" <<
                       "5. Change competition date\n" <<
-                      "6. Change competition award\n" <<
-                      "7. Delete competition\n" <<
-                      "8. Find by animal\n" <<
-                      "9. Find by award\n" <<
-                      "10. Find by name\n" <<
+                      "6. Delete competition\n" <<
+                      "7. Find by name\n" <<
                       "0. Back\n";
-              choice = getChoice(0, 10);
+              choice = getChoice(0, 7);
               switch(choice) {
                 case 1:
                   listCompetitions();
@@ -299,18 +298,9 @@ class Menu {
                   changeCompetitionDate();
                   break;
                 case 6:
-                  changeCompetitionAward();
-                  break;
-                case 7:
                   removeCompetition();
                   break;
-                case 8:
-                  findCompetitionByAnimal();
-                  break;
-                case 9:
-                  findCompetitionByAward();
-                  break;
-                case 10:
+                case 7:
                   findCompetitionByName();
                   break;
                 case 0:
@@ -334,8 +324,8 @@ class Menu {
     BreedRepository breedRepository;
     EmployeeRepository employeeRepository;
     ApplicationRepository applicationRepository;
-    AnimalDatabaseGateway animalGateway;
-    CompetitionDatabaseGateway competitionGateway;
+    AnimalRepository animalRepository;
+    CompetitionRepository competitionRepository;
     bool menuRunning = true;
     bool innerMenuRunning = true;
 

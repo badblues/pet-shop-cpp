@@ -85,7 +85,7 @@ void Menu::removeClient() {
 }
 
 void Menu::deleteClient(int id) {
-  vector<Animal> animals = animalGateway.findByClient(id);
+  vector<Animal> animals = animalRepository.findByClientId(id);
   for (int i = 0; i < animals.size(); i++)
     deleteAnimal(animals[i].getId());
   vector<Application> applications = applicationRepository.findByClientId(id);
@@ -192,7 +192,7 @@ void Menu::removeBreed() {
 }
 
 void Menu::deleteBreed(int id) {
-  vector<Animal> animals = animalGateway.findByBreed(id);
+  vector<Animal> animals = animalRepository.findByBreedId(id);
   vector<Application> applications = applicationRepository.findByBreedId(id);
   if (animals.size() > 0 || applications.size() > 0) {
     cout << "Cannot be deleted, there are animals or applications with that breed\n";
@@ -752,7 +752,7 @@ optional<Gender> Menu::inputGender() {
 
 void Menu::listAnimals() {
   try {
-    vector<Animal> animals = animalGateway.getAll();
+    vector<Animal> animals = animalRepository.getAll();
     cout << "\033[2J\033[H";
     printAnimals(animals);
     getchar();
@@ -786,7 +786,7 @@ void Menu::addAnimal() {
       return;
   }
   try {
-    Animal animal = animalGateway.create(name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    Animal animal = animalRepository.add(name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
     cout << "Success!\n";
     printAnimal(animal);
     getchar();
@@ -804,7 +804,7 @@ void Menu::changeAnimalName() {
   cout << "Enter name:\n";
   getline(cin, name);
   try {
-    Animal oldAnimal = animalGateway.get(id);
+    Animal oldAnimal = animalRepository.get(id);
     optional<int> age;
     if (oldAnimal.getAge().has_value())
       age = oldAnimal.getAge().value();
@@ -816,7 +816,7 @@ void Menu::changeAnimalName() {
     optional<int> ownerId;
     if (oldAnimal.getOwnerId().has_value())
       ownerId = oldAnimal.getOwnerId().value();
-    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -833,7 +833,7 @@ void Menu::changeAnimalAge() {
     return;
   optional<int> age = inputAge();
   try {
-    Animal oldAnimal = animalGateway.get(id);
+    Animal oldAnimal = animalRepository.get(id);
     string name = oldAnimal.getName();
     Gender gender = oldAnimal.getGender(); 
     int breedId = oldAnimal.getBreedId();
@@ -843,12 +843,14 @@ void Menu::changeAnimalAge() {
     optional<int> ownerId;
     if (oldAnimal.getOwnerId().has_value())
       ownerId = oldAnimal.getOwnerId().value();
-    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
+    getchar();
   } catch (exception& e) {
     cout << e.what() << "\n";
+    getchar();
     getchar();
     return;
   }
@@ -862,7 +864,7 @@ void Menu::changeAnimalGender() {
   int choice = getChoice(1, 2);
   Gender gender = choice == 1 ? Gender::male : Gender::female;
   try {
-    Animal oldAnimal = animalGateway.get(id);
+    Animal oldAnimal = animalRepository.get(id);
     string name = oldAnimal.getName(); 
     optional<int> age;
     if (oldAnimal.getAge().has_value())
@@ -874,7 +876,7 @@ void Menu::changeAnimalGender() {
     optional<int> ownerId;
     if (oldAnimal.getOwnerId().has_value())
       ownerId = oldAnimal.getOwnerId().value();
-    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -891,7 +893,7 @@ void Menu::changeAnimalBreed() {
     return;
   int breedId = inputBreedId();
   try {
-    Animal oldAnimal = animalGateway.get(id);
+    Animal oldAnimal = animalRepository.get(id);
     string name = oldAnimal.getName();
     optional<int> age;
     if (oldAnimal.getAge().has_value())
@@ -903,7 +905,7 @@ void Menu::changeAnimalBreed() {
     optional<int> ownerId;
     if (oldAnimal.getOwnerId().has_value())
       ownerId = oldAnimal.getOwnerId().value();
-    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -920,7 +922,7 @@ int id = inputAnimalId();
     return;
   string exterior = inputOptionalString("Exterior description");
   try {
-    Animal oldAnimal = animalGateway.get(id);
+    Animal oldAnimal = animalRepository.get(id);
     optional<int> age;
     if (oldAnimal.getAge().has_value())
       age = oldAnimal.getAge().value();
@@ -932,7 +934,7 @@ int id = inputAnimalId();
     optional<int> ownerId;
     if (oldAnimal.getOwnerId().has_value())
       ownerId = oldAnimal.getOwnerId().value();
-    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -949,7 +951,7 @@ void Menu::changeAnimalPedigree() {
     return;
   string pedigree = inputOptionalString("Pedigree");
   try {
-    Animal oldAnimal = animalGateway.get(id);
+    Animal oldAnimal = animalRepository.get(id);
     string name = oldAnimal.getName();
     optional<int> age;
     if (oldAnimal.getAge().has_value())
@@ -961,7 +963,7 @@ void Menu::changeAnimalPedigree() {
     optional<int> ownerId;
     if (oldAnimal.getOwnerId().has_value())
       ownerId = oldAnimal.getOwnerId().value();
-    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -978,7 +980,7 @@ void Menu::changeAnimalVeterinarian() {
     return;
   string veterinarian = inputOptionalString("Veterinarian");
   try {
-    Animal oldAnimal = animalGateway.get(id);
+    Animal oldAnimal = animalRepository.get(id);
     string name = oldAnimal.getName();
     optional<int> age;
     if (oldAnimal.getAge().has_value())
@@ -990,7 +992,7 @@ void Menu::changeAnimalVeterinarian() {
     optional<int> ownerId;
     if (oldAnimal.getOwnerId().has_value())
       ownerId = oldAnimal.getOwnerId().value();
-    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -1014,7 +1016,7 @@ void Menu::changeAnimalOwner() {
       return;
   }
   try {
-    Animal oldAnimal = animalGateway.get(id);
+    Animal oldAnimal = animalRepository.get(id);
     string name = oldAnimal.getName();
     optional<int> age;
     if (oldAnimal.getAge().has_value())
@@ -1024,7 +1026,7 @@ void Menu::changeAnimalOwner() {
     string exterior = oldAnimal.getExterior();
     string pedigree = oldAnimal.getPedigree();
     string veterinarian = oldAnimal.getVeterinarian();
-    Animal updatedAnimal = animalGateway.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -1049,10 +1051,7 @@ void Menu::removeAnimal() {
 }
 
 void Menu::deleteAnimal(int id) {
-  vector<Competition> competitions = competitionGateway.findByAnimal(id);
-  for (int i = 0; i < competitions.size(); i++)
-    deleteCompetition(competitions[i].getId());
-  animalGateway.remove(id);
+  animalRepository.remove(id);
   cout << "Success!\n";
   getchar();
 }
@@ -1062,7 +1061,7 @@ void Menu::listAnimalsByBreed() {
   if (breedId == -1)
     return;
   try {
-    vector<Animal> animals = animalGateway.findByBreed(breedId);
+    vector<Animal> animals = animalRepository.findByBreedId(breedId);
     cout << "\033[2J\033[H";
     printAnimals(animals);
     getchar();
@@ -1082,7 +1081,7 @@ void Menu::listAnimalsByOwner() {
       return;
   }
   try {
-    vector<Animal> animals = animalGateway.findByClient(ownerId);
+    vector<Animal> animals = animalRepository.findByClientId(ownerId);
     cout << "\033[2J\033[H";
     printAnimals(animals);
     getchar();
@@ -1165,16 +1164,16 @@ int Menu::inputAnimalId() {
     switch(choice) {
       case 1:
         id = inputClientId();
-        animals = animalGateway.findByClient(id);
+        animals = animalRepository.findByClientId(id);
         break;
       case 2:
         id = inputBreedId();
-        animals = animalGateway.findByBreed(id);
+        animals = animalRepository.findByBreedId(id);
         break;
       case 3:
         cout << "Enter name:\n";
         getline(cin, name);
-        animals = animalGateway.findByName(name);
+        animals = animalRepository.findByName(name);
         break;
       case 0:
         return -1;
@@ -1204,7 +1203,7 @@ int Menu::inputAnimalId() {
 
 void Menu::listCompetitions() {
   try {
-    vector<Competition> competition = competitionGateway.getAll();
+    vector<Competition> competition = competitionRepository.getAll();
     cout << "\033[2J\033[H";
     printCompetitions(competition);
     getchar();
@@ -1215,9 +1214,6 @@ void Menu::listCompetitions() {
 }
 
 void Menu::addCompetition() {
-  int animalId = inputAnimalId();
-  if (animalId == -1)
-    return;
   string name;
   cout << "Enter name of the competition:\n";
   getline(cin, name);
@@ -1227,11 +1223,8 @@ void Menu::addCompetition() {
   optional<tm> date = inputDate();
   if (!date.has_value())
     return;
-  string award;
-  cout << "Enter award of the animal:\n";
-  getline(cin, award);
   try {
-    Competition competitions = competitionGateway.create(animalId, name, location, date.value(), award);
+    Competition competitions = competitionRepository.add(name, location, date.value());
     cout << "Success!\n";
     printCompetition(competitions);
     getchar();
@@ -1249,12 +1242,10 @@ void Menu::changeCompetitionName() {
     string name;
     cout << "Enter name of the competition:\n";
     getline(cin, name);
-    Competition oldCompetition = competitionGateway.get(id);
-    int animalId = oldCompetition.getAnimalId();
+    Competition oldCompetition = competitionRepository.get(id);
     string location = oldCompetition.getLocation();
     tm date = oldCompetition.getDate();
-    string award = oldCompetition.getAward();
-    Competition updatedCompetition = competitionGateway.update(id, animalId, name, location, date, award);
+    Competition updatedCompetition = competitionRepository.update(id, name, location, date);
     cout << "Success!\n";
     printCompetition(updatedCompetition);
     getchar();
@@ -1273,12 +1264,10 @@ void Menu::changeCompetitionLocation() {
     string location;
     cout << "Enter location of the competition:\n";
     getline(cin, location);
-    Competition oldCompetition = competitionGateway.get(id);
-    int animalId = oldCompetition.getAnimalId();
+    Competition oldCompetition = competitionRepository.get(id);
     string name = oldCompetition.getName();
     tm date = oldCompetition.getDate();
-    string award = oldCompetition.getAward();
-    Competition updatedCompetition = competitionGateway.update(id, animalId, name, location, date, award);
+    Competition updatedCompetition = competitionRepository.update(id, name, location, date);
     cout << "Success!\n";
     printCompetition(updatedCompetition);
     getchar();
@@ -1297,12 +1286,10 @@ void Menu::changeCompetitionDate() {
     optional<tm> date = inputDate();
     if (!date.has_value())
       return;
-    Competition oldCompetition = competitionGateway.get(id);
-    int animalId = oldCompetition.getAnimalId();
+    Competition oldCompetition = competitionRepository.get(id);
     string name = oldCompetition.getName();
     string location = oldCompetition.getLocation();
-    string award = oldCompetition.getAward();
-    Competition updatedCompetition = competitionGateway.update(id, animalId, name, location, date.value(), award);
+    Competition updatedCompetition = competitionRepository.update(id, name, location, date.value());
     cout << "Success!\n";
     printCompetition(updatedCompetition);
     getchar();
@@ -1313,35 +1300,12 @@ void Menu::changeCompetitionDate() {
   }
 }
 
-void Menu::changeCompetitionAward() {
-  int id = inputCompetitionId();
-  if (id == -1)
-    return;
-  try {
-    string award;
-    cout << "Enter award of the animal:\n";
-    getline(cin, award);
-    Competition oldCompetition = competitionGateway.get(id);
-    int animalId = oldCompetition.getAnimalId();
-    string name = oldCompetition.getName();
-    string location = oldCompetition.getLocation();
-    tm date = oldCompetition.getDate();
-    Competition updatedCompetition = competitionGateway.update(id, animalId, name, location, date, award);
-    cout << "Success!\n";
-    printCompetition(updatedCompetition);
-    getchar();
-  } catch(exception& e) {
-    cout << e.what() << "\n";
-    getchar();
-    return;
-  }
-}
 void Menu::removeCompetition() {
   int id = inputCompetitionId();
   if (id == -1)
     return;
   try {
-    competitionGateway.remove(id);
+    competitionRepository.remove(id);
   } catch(exception& e) {
     cout << e.what() << "\n";
     getchar();
@@ -1350,41 +1314,9 @@ void Menu::removeCompetition() {
 }
 
 void Menu::deleteCompetition(int id) {
-  competitionGateway.remove(id);
+  competitionRepository.remove(id);
   cout << "Success!\n";
   getchar();
-}
-
-void Menu::findCompetitionByAnimal() {
-  int animalId = inputAnimalId();
-  if (animalId == -1)
-    return;
-  try {
-    vector<Competition> competitions = competitionGateway.findByAnimal(animalId);
-    cout << "\033[2J\033[H";
-    cout << "Competitions:\n";
-    printCompetitions(competitions);
-    getchar();
-  } catch(const exception& e) {
-    cout << e.what() << "\n";
-    getchar();
-  }
-}
-
-void Menu::findCompetitionByAward() {
-  string award;
-  cout << "Enter award:\n";
-  getline(cin, award);
-  try {
-    vector<Competition> competitions = competitionGateway.findByAward(award);
-    cout << "\033[2J\033[H";
-    cout << "Competitions:\n";
-    printCompetitions(competitions);
-    getchar();
-  } catch(const exception& e) {
-    cout << e.what() << "\n";
-    getchar();
-  }
 }
 
 void Menu::findCompetitionByName() {
@@ -1392,7 +1324,7 @@ void Menu::findCompetitionByName() {
   cout << "Enter name:\n";
   getline(cin, name);
   try {
-    vector<Competition> competitions = competitionGateway.findByName(name);
+    vector<Competition> competitions = competitionRepository.findByName(name);
     cout << "\033[2J\033[H";
     cout << "Competitions:\n";
     printCompetitions(competitions);
@@ -1411,14 +1343,9 @@ void Menu::printCompetitions(vector<Competition> competitions) {
     stringstream dateStream;
     tm date = competitions[i].getDate();
     dateStream << put_time(&date, "%Y-%m-%d");
-    Animal animal = animalGateway.get(competitions[i].getAnimalId());
-    Breed breed = breedRepository.get(animal.getBreedId());
-    cout << i + 1 << ". Animal name: " << animal.getName() <<
-            ", Animal breed: " << breed.getName() <<
-            ", Competition name: " << competitions[i].getName() <<
+    cout << i + 1 << ". Competition name: " << competitions[i].getName() <<
             ", Location: " << competitions[i].getLocation() <<
-            ", Date: " << dateStream.str() <<
-            ", Award: " << competitions[i].getAward() << "\n";
+            ", Date: " << dateStream.str() << "\n";
   }
 }
 
@@ -1426,44 +1353,20 @@ void Menu::printCompetition(Competition competition) {
   stringstream dateStream;
   tm date = competition.getDate();
   dateStream << put_time(&date, "%Y-%m-%d");
-  Animal animal = animalGateway.get(competition.getAnimalId());
-  Breed breed = breedRepository.get(animal.getBreedId());
-  cout << "Animal name: " << animal.getName() <<
-          ", Animal breed: " << breed.getName() <<
-          ", Competition name: " << competition.getName() <<
+  cout << "Competition name: " << competition.getName() <<
           ", Location: " << competition.getLocation() <<
-          ", Date: " << dateStream.str() <<
-          ", Award: " << competition.getAward() << "\n";
+          ", Date: " << dateStream.str() << "\n";
 }
 
+//TODO
 int Menu::inputCompetitionId() {
-  cout << "Find competition by:\n"
-       << "1. Animal\n"
-       << "2. Name\n"
-       << "0. Go back\n";
-
-  int choice = getChoice(0, 2);
   int id;
   string name;
   vector<Competition> competitions;
   try {
-    switch(choice) {
-      case 1:
-        id = inputAnimalId();
-        competitions = competitionGateway.findByAnimal(id);
-        break;
-      case 2:
-        name;
-        cout << "Enter name:\n";
-        getline(cin, name);
-        competitions = competitionGateway.findByName(name);
-        break;
-      case 0:
-        return -1;
-        break;
-    }
-    if (id == -1)
-      return -1;
+    cout << "Enter name:\n";
+    getline(cin, name);
+    competitions = competitionRepository.findByName(name);
   } catch (exception& e) {
     cout << e.what() << "\n";
     getchar();

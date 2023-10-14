@@ -8,13 +8,11 @@ class Competition {
 
   public:
 
-    Competition(int id, int animalId, string name, string location, tm date, string award) {
+    Competition(int id, string name, string location, tm date) {
       this->id = id;
-      this->animalId = animalId;
       this->name = name;
       this->location = location;
       this->date = date;
-      this->award = award;
     }
 
     string toString() {
@@ -22,11 +20,9 @@ class Competition {
       stringstream dateStream;
       dateStream << put_time(&date, "%Y-%m-%d");
       oss << "[id = " << id <<
-              "; animalId = " << animalId <<
               "; name = " << name <<
               "; location = " << location <<
-              "; date = " << dateStream.str() <<
-              "; award = " << award << "];}";
+              "; date = " << dateStream.str() << "];}";
       return oss.str();
     }
 
@@ -36,14 +32,6 @@ class Competition {
 
     void setId(int id) {
         this->id = id;
-    }
-
-    int getAnimalId() {
-      return animalId;
-    }
-
-    void setAnimalId(int animalId) {
-      this->animalId = animalId;
     }
 
     string getName() {
@@ -70,21 +58,9 @@ class Competition {
       this->date = date;
     }
 
-    string getAward() {
-      return award;
-    }
-
-    void setAward(string award) {
-      this->award = award;
-    }
-
-
-
   private:
     int id;
-    int animalId;
     string name;
     string location;
     tm date;
-    string award;
 };

@@ -6,12 +6,11 @@
 
 TODO:
 - многие ко многим между animal и competitions:
-  - создать модели
-- убрать зависимости между gateway и model
 - добавить репозитории, которые будут обрабатывать ответы от gateway
 - проверить правильно ли пробрасываются ошибки
 - сделать меню более удобным (выбираешь клиента, совершаешь операции с ним)
-- обновить создание таблиц
+- вывод вложенных ресурсов
+- проблема удаления соревнований или животных (наверное стоит удалить и участия)
 
 CREATE TABLE IF NOT EXISTS Breeds (
   id serial PRIMARY KEY,
@@ -46,13 +45,12 @@ CREATE TABLE IF NOT EXISTS Animals (
 
 CREATE TABLE IF NOT EXISTS Competitions (
   id serial PRIMARY KEY,
-  animal_id int REFERENCES Animals(id) NOT NULL,
   name varchar(255) NOT NULL,
   location varchar(255) NOT NULL,
   date date NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS AnimalCompetitions (
+CREATE TABLE IF NOT EXISTS Participations (
   animal_id int REFERENCES Animals(id) NOT NULL,
   competition_id int REFERENCES Competitions(id) NOT NULL,
   award varchar(255) not null,
