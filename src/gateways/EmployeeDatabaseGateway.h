@@ -22,7 +22,9 @@ class EmployeeDatabaseGateway : DatabaseGateway {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      string insertQuery = "INSERT INTO employees (name, address, position, salary) VALUES ('" + name + "', '" + address + "', '" + position + "', " + to_string(salary * 100) + ") RETURNING id, name, address, position, salary, position, salary";
+      string insertQuery = "INSERT INTO employees (name, address, position, salary) VALUES ('"
+                         + name + "', '" + address + "', '" + position + "', " + to_string(salary * 100)
+                         + ") RETURNING id, name, address, position, salary, position, salary";
       SQLRETURN sqlReturn = SQLExecDirect(hStmt, (SQLCHAR*)insertQuery.c_str(), SQL_NTS);
       handleSQLReturn(sqlReturn, hStmt);
       
@@ -92,7 +94,10 @@ class EmployeeDatabaseGateway : DatabaseGateway {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      string updateQuery = "UPDATE employees SET name = '" + name + "', address = '" + address + "' WHERE id = " + to_string(id) + " RETURNING id, name, address, position, salary";
+      string updateQuery = "UPDATE employees SET name = '" + name + "', address = '" + address
+                         + "', position = '" + position + "', salary = " + to_string(salary * 100)
+                         + " WHERE id = " + to_string(id)
+                         + " RETURNING id, name, address, position, salary";
       SQLRETURN sqlReturn = SQLExecDirect(hStmt, (SQLCHAR*)updateQuery.c_str(), SQL_NTS);
       handleSQLReturn(sqlReturn, hStmt);
 

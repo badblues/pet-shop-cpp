@@ -126,7 +126,7 @@ class ParticipationDatabaseGateway : DatabaseGateway {
       SQLHSTMT hStmt;
       SQLAllocHandle(SQL_HANDLE_STMT, hDbc, &hStmt);
 
-      string deleteQuery = "DELETE FROM participations WHERE animal_id = " + to_string(animalId) + ", competition_id = " + to_string(competitionId);
+      string deleteQuery = "DELETE FROM participations WHERE animal_id = " + to_string(animalId) + " AND competition_id = " + to_string(competitionId);
       SQLRETURN sqlReturn = SQLExecDirect(hStmt, (SQLCHAR*)deleteQuery.c_str(), SQL_NTS);
       handleSQLReturn(sqlReturn, hStmt);
 

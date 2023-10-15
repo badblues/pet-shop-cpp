@@ -4,38 +4,6 @@
 - отображает разработанные классы с помощью архитектурного шаблона Table Data Gateway
 - операции в соответствии с семантикой варианта, без привязки к реляционной модели
 
-TODO:
-- проверить правильно ли пробрасываются ошибки
-- сделать меню более удобным (выбираешь клиента, совершаешь операции с ним)
-- проблема удаления соревнований или животных (наверное стоит удалить и участия)
-
-menu:
-  select client -> 
-    list animals
-    list applications
-  select animal ->
-    change data
-    add participation
-    list participations
-    delete
-  select competition ->
-    chagne data
-    add participation
-    list animals
-    delete
-  select employee ->
-    change data
-    delete
-  select breed ->
-    change data
-    delete
-  
-CRUD:
-  client ✓
-  breed ✓
-
-
-
 CREATE TABLE IF NOT EXISTS Breeds (
   id serial PRIMARY KEY,
   name varchar(255) NOT NULL

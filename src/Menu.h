@@ -138,22 +138,148 @@ class Menu {
               break;
             currentAnimal = animalRepository.get(id);
             while(innerMenuRunning) {
+              cout << "\033[2J\033[H";
+              printAnimal(currentAnimal);
+              cout << "1. Change name\n"
+                   << "2. Change age\n"
+                   << "3. Change gender\n"
+                   << "4. Change breed\n"
+                   << "5. Change exterior\n"
+                   << "6. Change pedigree\n"
+                   << "7. Change veterinarian\n"
+                   << "8. Change owner\n"
+                   << "9. Add competition participation\n"
+                   << "10. List participations\n"
+                   << "11. Remove participation\n"
+                   << "12. Delete animal\n"
+                   << "0. Back\n";
+              choice = getChoice(0, 12);
+              switch(choice) {
+                case 1:
+                  changeAnimalName();
+                  break;
+                case 2:
+                  changeAnimalAge();
+                  break;
+                case 3:
+                  changeAnimalGender();
+                  break;
+                case 4:
+                  changeAnimalBreed();
+                  break;
+                case 5:
+                  changeAnimalExterior();
+                  break;
+                case 6:
+                  changeAnimalPedigree();
+                  break;
+                case 7:
+                  changeAnimalVeterinarian();
+                  break;
+                case 8:
+                  changeAnimalOwner();
+                  break;
+                case 9:
+                  addAnimalParticipation();
+                  break;
+                case 10:
+                  listAnimalParticipations();
+                  break;
+                case 11:
+                  removeAnimalParticipation();
+                  break;
+                case 12:
+                  removeAnimal();
+                  innerMenuRunning = false;
+                  break;
+                case 0:
+                  innerMenuRunning = false;
+                  break;
+              }
             }
             break;
           case 9:
-            id = inputCompetitionId();
-            if (id == -1)
-              break;
-            currentCompetition = competitionRepository.get(id);
-            while(innerMenuRunning) {
-            }
-            break;
-          case 10:
             id = inputEmployeeId();
             if (id == -1)
               break;
             currentEmployee = employeeRepository.get(id);
             while(innerMenuRunning) {
+              cout << "\033[2J\033[H";
+              printEmployee(currentEmployee);
+              cout << "1. Change name\n"
+                   << "2. Change address\n"
+                   << "3. Change position\n"
+                   << "4. Change salary\n"
+                   << "5. Delete employee\n"
+                   << "0. Back\n";
+              choice = getChoice(0, 5);
+              switch(choice) {
+                case 1:
+                  changeEmployeeName();
+                  break;
+                case 2:
+                  changeEmployeeAddress();
+                  break;
+                case 3:
+                  changeEmployeePosition();
+                  break;
+                case 4:
+                  changeEmployeeSalary();
+                  break;
+                case 5:
+                  removeEmployee();
+                  innerMenuRunning = false;
+                  break;
+                case 0:
+                  innerMenuRunning = false;
+                  break;
+              }
+            }
+            break;
+          case 10:
+            id = inputCompetitionId();
+            if (id == -1)
+              break;
+            currentCompetition = competitionRepository.get(id);
+            while(innerMenuRunning) {
+              cout << "\033[2J\033[H";
+              printCompetition(currentCompetition);
+              cout << "1. Change name\n"
+                   << "2. Change location\n"
+                   << "3. Change date\n"
+                   << "4. Add animal participant\n"
+                   << "5. List participants\n"
+                   << "6. Remove participation\n"
+                   << "7. Delete competition\n"
+                   << "0. Back\n";
+              choice = getChoice(0, 7);
+              switch(choice) {
+                case 1:
+                  changeCompetitionName();
+                  break;
+                case 2:
+                  changeCompetitionLocation();
+                  break;
+                case 3:
+                  changeCompetitionDate();
+                  break;
+                case 4:
+                  addCompetitionParticipation();
+                  break;
+                case 5:
+                  listCompetitionParticipations();
+                  break;
+                case 6:
+                  removeCompetitionParticipation();
+                  break;
+                case 7:
+                  removeCompetition();
+                  innerMenuRunning = false;
+                  break;
+                case 0:
+                  innerMenuRunning = false;
+                  break;
+              }
             }
             break;
           case 11:
@@ -162,7 +288,7 @@ class Menu {
               break;
             currentBreed = breedRepository.get(id);
             while(innerMenuRunning) {
-            cout << "\033[2J\033[H";
+              cout << "\033[2J\033[H";
               printBreed(currentBreed);
               cout << "1. Change name\n"
                    << "2. Delete breed\n"
@@ -174,6 +300,7 @@ class Menu {
                   break;
                 case 2:
                   removeBreed();
+                  innerMenuRunning = false;
                   break;
                 case 0:
                   innerMenuRunning = false;
@@ -308,6 +435,9 @@ class Menu {
     void changeAnimalPedigree();
     void changeAnimalVeterinarian();
     void changeAnimalOwner();
+    void addAnimalParticipation();
+    void listAnimalParticipations();
+    void removeAnimalParticipation();
     void removeAnimal();
     void deleteAnimal(int id);
     void printAnimals(vector<Animal> animals);
@@ -321,13 +451,19 @@ class Menu {
     void changeCompetitionName();
     void changeCompetitionLocation();
     void changeCompetitionDate();
-    void changeCompetitionAward();
     void removeCompetition();
     void deleteCompetition(int id);
+    void addCompetitionParticipation();
+    void listCompetitionParticipations();
+    void removeCompetitionParticipation();
     void printCompetitions(vector<Competition> competitions);
     void printCompetition(Competition competition);
     int inputCompetitionId();
     optional<tm> inputDate();
+
+    void printParticipation(Participation participation);
+    void printParticipations(vector<Participation> participations);
+    void deleteParticipation(int animalId, int competitionId);
 };
 
 

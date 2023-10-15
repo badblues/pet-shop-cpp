@@ -40,6 +40,7 @@ void Menu::changeClientName() {
   try {
     string address = currentClient.getAddress();
     Client updatedClient = clientRepository.update(id, name, address);
+    currentClient = updatedClient;
     cout << "Success!\n";
     printClient(updatedClient);
     getchar();
@@ -57,6 +58,7 @@ void Menu::changeClientAddress() {
   try {
     string name = currentClient.getName();
     Client updatedClient = clientRepository.update(id, name, address);
+    currentClient = updatedClient;
     cout << "Success!\n";
     printClient(updatedClient);
     getchar();
@@ -98,16 +100,16 @@ void Menu::assignAnimal() {
   if (animalId == -1)
     return;
   try {
-    Animal oldAnimal = animalRepository.get(animalId);
-    string name = oldAnimal.getName();
+    Animal currentAnimal = animalRepository.get(animalId);
+    string name = currentAnimal.getName();
     optional<int> age;
-    if (oldAnimal.getAge().has_value())
-      age = oldAnimal.getAge().value();
-    Gender gender = oldAnimal.getGender(); 
-    int breedId = oldAnimal.getBreedId();
-    string exterior = oldAnimal.getExterior();
-    string pedigree = oldAnimal.getPedigree();
-    string veterinarian = oldAnimal.getVeterinarian();
+    if (currentAnimal.getAge().has_value())
+      age = currentAnimal.getAge().value();
+    Gender gender = currentAnimal.getGender(); 
+    int breedId = currentAnimal.getBreedId();
+    string exterior = currentAnimal.getExterior();
+    string pedigree = currentAnimal.getPedigree();
+    string veterinarian = currentAnimal.getVeterinarian();
     Animal updatedAnimal = animalRepository.update(animalId, name, age, gender, breedId, exterior, pedigree, veterinarian, clientId);
     cout << "Success!\n";
     printAnimal(updatedAnimal);
@@ -207,6 +209,7 @@ void Menu::changeBreedName() {
   getline(cin, name);
   try {
     Breed updatedBreed = breedRepository.update(id, name);
+    currentBreed = updatedBreed;
     cout << "Success!\n";
     printBreed(updatedBreed);
     getchar();
@@ -327,18 +330,16 @@ void Menu::addEmployee() {
 }
 
 void Menu::changeEmployeeName() {
-  int id = inputEmployeeId();
-  if (id == -1)
-    return;
+  int id = currentEmployee.getId();
   string name;
   cout << "Enter new name:\n";
   getline(cin, name);
   try {
-    Employee oldEmployee = employeeRepository.get(id);
-    string address = oldEmployee.getAddress();
-    string position = oldEmployee.getPosition();
-    double salary = oldEmployee.getSalary();
+    string address = currentEmployee.getAddress();
+    string position = currentEmployee.getPosition();
+    double salary = currentEmployee.getSalary();
     Employee updatedEmployee = employeeRepository.update(id, name, address, position, salary);
+    currentEmployee = updatedEmployee;
     cout << "Success!\n";
     printEmployee(updatedEmployee);
     getchar();
@@ -349,18 +350,16 @@ void Menu::changeEmployeeName() {
 }
 
 void Menu::changeEmployeeAddress() {
-  int id = inputEmployeeId();
-  if (id == -1)
-    return;
+  int id = currentEmployee.getId();
   string address;
   cout << "Enter new address:\n";
   getline(cin, address);
   try {
-    Employee oldEmployee = employeeRepository.get(id);
-    string name = oldEmployee.getName();
-    string position = oldEmployee.getPosition();
-    double salary = oldEmployee.getSalary();
+    string name = currentEmployee.getName();
+    string position = currentEmployee.getPosition();
+    double salary = currentEmployee.getSalary();
     Employee updatedEmployee = employeeRepository.update(id, name, address, position, salary);
+    currentEmployee = updatedEmployee;
     cout << "Success!\n";
     printEmployee(updatedEmployee);
     getchar();
@@ -371,18 +370,16 @@ void Menu::changeEmployeeAddress() {
 }
 
 void Menu::changeEmployeePosition() {
-  int id = inputEmployeeId();
-  if (id == -1)
-    return;
+  int id = currentEmployee.getId();
   string position;
   cout << "Enter new position:\n";
   getline(cin, position);
   try {
-    Employee oldEmployee = employeeRepository.get(id);
-    string name = oldEmployee.getName();
-    string address = oldEmployee.getAddress();
-    double salary = oldEmployee.getSalary();
+    string name = currentEmployee.getName();
+    string address = currentEmployee.getAddress();
+    double salary = currentEmployee.getSalary();
     Employee updatedEmployee = employeeRepository.update(id, name, address, position, salary);
+    currentEmployee = updatedEmployee;
     cout << "Success!\n";
     printEmployee(updatedEmployee);
     getchar();
@@ -393,18 +390,16 @@ void Menu::changeEmployeePosition() {
 }
 
 void Menu::changeEmployeeSalary() {
-  int id = inputEmployeeId();
-  if (id == -1)
-    return;
+  int id = currentEmployee.getId();
   double salary;
   cout << "Enter new salary:\n";
   cin >> salary;
   try {
-    Employee oldEmployee = employeeRepository.get(id);
-    string name = oldEmployee.getName();
-    string address = oldEmployee.getAddress();
-    string position = oldEmployee.getPosition();
+    string name = currentEmployee.getName();
+    string address = currentEmployee.getAddress();
+    string position = currentEmployee.getPosition();
     Employee updatedEmployee = employeeRepository.update(id, name, address, position, salary);
+    currentEmployee = updatedEmployee;
     cout << "Success!\n";
     printEmployee(updatedEmployee);
     getchar();
@@ -415,9 +410,7 @@ void Menu::changeEmployeeSalary() {
 }
 
 void Menu::removeEmployee() {
-  int id = inputEmployeeId();
-  if (id == -1)
-    return;
+  int id = currentEmployee.getId();
   try {
     deleteEmployee(id);
   } catch(const exception& e) {
@@ -796,26 +789,24 @@ void Menu::addAnimal() {
 }
 
 void Menu::changeAnimalName() {
-  int id = inputAnimalId();
-  if (id == -1)
-    return;
+  int id = currentAnimal.getId();
   string name;
   cout << "Enter name:\n";
   getline(cin, name);
   try {
-    Animal oldAnimal = animalRepository.get(id);
     optional<int> age;
-    if (oldAnimal.getAge().has_value())
-      age = oldAnimal.getAge().value();
-    Gender gender = oldAnimal.getGender(); 
-    int breedId = oldAnimal.getBreedId();
-    string exterior = oldAnimal.getExterior();
-    string pedigree = oldAnimal.getPedigree();
-    string veterinarian = oldAnimal.getVeterinarian();
+    if (currentAnimal.getAge().has_value())
+      age = currentAnimal.getAge().value();
+    Gender gender = currentAnimal.getGender(); 
+    int breedId = currentAnimal.getBreedId();
+    string exterior = currentAnimal.getExterior();
+    string pedigree = currentAnimal.getPedigree();
+    string veterinarian = currentAnimal.getVeterinarian();
     optional<int> ownerId;
-    if (oldAnimal.getOwnerId().has_value())
-      ownerId = oldAnimal.getOwnerId().value();
+    if (currentAnimal.getOwnerId().has_value())
+      ownerId = currentAnimal.getOwnerId().value();
     Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    currentAnimal = updatedAnimal;
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -827,22 +818,20 @@ void Menu::changeAnimalName() {
 }
 
 void Menu::changeAnimalAge() {
-  int id = inputAnimalId();
-  if (id == -1)
-    return;
+  int id = currentAnimal.getId();
   optional<int> age = inputAge();
   try {
-    Animal oldAnimal = animalRepository.get(id);
-    string name = oldAnimal.getName();
-    Gender gender = oldAnimal.getGender(); 
-    int breedId = oldAnimal.getBreedId();
-    string exterior = oldAnimal.getExterior();
-    string pedigree = oldAnimal.getPedigree();
-    string veterinarian = oldAnimal.getVeterinarian();
+    string name = currentAnimal.getName();
+    Gender gender = currentAnimal.getGender(); 
+    int breedId = currentAnimal.getBreedId();
+    string exterior = currentAnimal.getExterior();
+    string pedigree = currentAnimal.getPedigree();
+    string veterinarian = currentAnimal.getVeterinarian();
     optional<int> ownerId;
-    if (oldAnimal.getOwnerId().has_value())
-      ownerId = oldAnimal.getOwnerId().value();
+    if (currentAnimal.getOwnerId().has_value())
+      ownerId = currentAnimal.getOwnerId().value();
     Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    currentAnimal = updatedAnimal;
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -856,26 +845,24 @@ void Menu::changeAnimalAge() {
 }
 
 void Menu::changeAnimalGender() {
-  int id = inputAnimalId();
-  if (id == -1)
-    return;
+  int id = currentAnimal.getId();
   cout << "Gender:\n1.male\n2.female\n";
   int choice = getChoice(1, 2);
   Gender gender = choice == 1 ? Gender::male : Gender::female;
   try {
-    Animal oldAnimal = animalRepository.get(id);
-    string name = oldAnimal.getName(); 
+    string name = currentAnimal.getName(); 
     optional<int> age;
-    if (oldAnimal.getAge().has_value())
-      age = oldAnimal.getAge().value();
-    int breedId = oldAnimal.getBreedId();
-    string exterior = oldAnimal.getExterior();
-    string pedigree = oldAnimal.getPedigree();
-    string veterinarian = oldAnimal.getVeterinarian();
+    if (currentAnimal.getAge().has_value())
+      age = currentAnimal.getAge().value();
+    int breedId = currentAnimal.getBreedId();
+    string exterior = currentAnimal.getExterior();
+    string pedigree = currentAnimal.getPedigree();
+    string veterinarian = currentAnimal.getVeterinarian();
     optional<int> ownerId;
-    if (oldAnimal.getOwnerId().has_value())
-      ownerId = oldAnimal.getOwnerId().value();
+    if (currentAnimal.getOwnerId().has_value())
+      ownerId = currentAnimal.getOwnerId().value();
     Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    currentAnimal = updatedAnimal;
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -887,24 +874,22 @@ void Menu::changeAnimalGender() {
 }
 
 void Menu::changeAnimalBreed() {
-  int id = inputAnimalId();
-  if (id == -1)
-    return;
+  int id = currentAnimal.getId();
   int breedId = inputBreedId();
   try {
-    Animal oldAnimal = animalRepository.get(id);
-    string name = oldAnimal.getName();
+    string name = currentAnimal.getName();
     optional<int> age;
-    if (oldAnimal.getAge().has_value())
-      age = oldAnimal.getAge().value();
-    Gender gender = oldAnimal.getGender(); 
-    string exterior = oldAnimal.getExterior();
-    string pedigree = oldAnimal.getPedigree();
-    string veterinarian = oldAnimal.getVeterinarian();
+    if (currentAnimal.getAge().has_value())
+      age = currentAnimal.getAge().value();
+    Gender gender = currentAnimal.getGender(); 
+    string exterior = currentAnimal.getExterior();
+    string pedigree = currentAnimal.getPedigree();
+    string veterinarian = currentAnimal.getVeterinarian();
     optional<int> ownerId;
-    if (oldAnimal.getOwnerId().has_value())
-      ownerId = oldAnimal.getOwnerId().value();
+    if (currentAnimal.getOwnerId().has_value())
+      ownerId = currentAnimal.getOwnerId().value();
     Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    currentAnimal = updatedAnimal;
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -916,24 +901,22 @@ void Menu::changeAnimalBreed() {
 }
 
 void Menu::changeAnimalExterior() {
-int id = inputAnimalId();
-  if (id == -1)
-    return;
+  int id = currentAnimal.getId();
   string exterior = inputOptionalString("Exterior description");
   try {
-    Animal oldAnimal = animalRepository.get(id);
     optional<int> age;
-    if (oldAnimal.getAge().has_value())
-      age = oldAnimal.getAge().value();
-    Gender gender = oldAnimal.getGender(); 
-    int breedId = oldAnimal.getBreedId();
-    string name = oldAnimal.getName();
-    string pedigree = oldAnimal.getPedigree();
-    string veterinarian = oldAnimal.getVeterinarian();
+    if (currentAnimal.getAge().has_value())
+      age = currentAnimal.getAge().value();
+    Gender gender = currentAnimal.getGender(); 
+    int breedId = currentAnimal.getBreedId();
+    string name = currentAnimal.getName();
+    string pedigree = currentAnimal.getPedigree();
+    string veterinarian = currentAnimal.getVeterinarian();
     optional<int> ownerId;
-    if (oldAnimal.getOwnerId().has_value())
-      ownerId = oldAnimal.getOwnerId().value();
+    if (currentAnimal.getOwnerId().has_value())
+      ownerId = currentAnimal.getOwnerId().value();
     Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    currentAnimal = updatedAnimal;
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -945,24 +928,22 @@ int id = inputAnimalId();
 }
 
 void Menu::changeAnimalPedigree() {
-  int id = inputAnimalId();
-  if (id == -1)
-    return;
+  int id = currentAnimal.getId();
   string pedigree = inputOptionalString("Pedigree");
   try {
-    Animal oldAnimal = animalRepository.get(id);
-    string name = oldAnimal.getName();
+    string name = currentAnimal.getName();
     optional<int> age;
-    if (oldAnimal.getAge().has_value())
-      age = oldAnimal.getAge().value();
-    Gender gender = oldAnimal.getGender(); 
-    int breedId = oldAnimal.getBreedId();
-    string exterior = oldAnimal.getExterior();
-    string veterinarian = oldAnimal.getVeterinarian();
+    if (currentAnimal.getAge().has_value())
+      age = currentAnimal.getAge().value();
+    Gender gender = currentAnimal.getGender(); 
+    int breedId = currentAnimal.getBreedId();
+    string exterior = currentAnimal.getExterior();
+    string veterinarian = currentAnimal.getVeterinarian();
     optional<int> ownerId;
-    if (oldAnimal.getOwnerId().has_value())
-      ownerId = oldAnimal.getOwnerId().value();
+    if (currentAnimal.getOwnerId().has_value())
+      ownerId = currentAnimal.getOwnerId().value();
     Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    currentAnimal = updatedAnimal;
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -974,24 +955,22 @@ void Menu::changeAnimalPedigree() {
 }
 
 void Menu::changeAnimalVeterinarian() {
-  int id = inputAnimalId();
-  if (id == -1)
-    return;
+  int id = currentAnimal.getId();
   string veterinarian = inputOptionalString("Veterinarian");
   try {
-    Animal oldAnimal = animalRepository.get(id);
-    string name = oldAnimal.getName();
+    string name = currentAnimal.getName();
     optional<int> age;
-    if (oldAnimal.getAge().has_value())
-      age = oldAnimal.getAge().value();
-    Gender gender = oldAnimal.getGender(); 
-    int breedId = oldAnimal.getBreedId();
-    string exterior = oldAnimal.getExterior();
-    string pedigree = oldAnimal.getPedigree();
+    if (currentAnimal.getAge().has_value())
+      age = currentAnimal.getAge().value();
+    Gender gender = currentAnimal.getGender(); 
+    int breedId = currentAnimal.getBreedId();
+    string exterior = currentAnimal.getExterior();
+    string pedigree = currentAnimal.getPedigree();
     optional<int> ownerId;
-    if (oldAnimal.getOwnerId().has_value())
-      ownerId = oldAnimal.getOwnerId().value();
+    if (currentAnimal.getOwnerId().has_value())
+      ownerId = currentAnimal.getOwnerId().value();
     Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    currentAnimal = updatedAnimal;
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -1003,9 +982,7 @@ void Menu::changeAnimalVeterinarian() {
 }
 
 void Menu::changeAnimalOwner() {
-  int id = inputAnimalId();
-  if (id == -1)
-    return;
+  int id = currentAnimal.getId();
   optional<int> ownerId;
   cout << "Owner:\n1.Has\n2.Has no\n";
   int choice = getChoice(1, 2);
@@ -1015,17 +992,17 @@ void Menu::changeAnimalOwner() {
       return;
   }
   try {
-    Animal oldAnimal = animalRepository.get(id);
-    string name = oldAnimal.getName();
+    string name = currentAnimal.getName();
     optional<int> age;
-    if (oldAnimal.getAge().has_value())
-      age = oldAnimal.getAge().value();
-    Gender gender = oldAnimal.getGender(); 
-    int breedId = oldAnimal.getBreedId();
-    string exterior = oldAnimal.getExterior();
-    string pedigree = oldAnimal.getPedigree();
-    string veterinarian = oldAnimal.getVeterinarian();
+    if (currentAnimal.getAge().has_value())
+      age = currentAnimal.getAge().value();
+    Gender gender = currentAnimal.getGender(); 
+    int breedId = currentAnimal.getBreedId();
+    string exterior = currentAnimal.getExterior();
+    string pedigree = currentAnimal.getPedigree();
+    string veterinarian = currentAnimal.getVeterinarian();
     Animal updatedAnimal = animalRepository.update(id, name, age, gender, breedId, exterior, pedigree, veterinarian, ownerId);
+    currentAnimal = updatedAnimal;
     cout << "Success!\n";
     printAnimal(updatedAnimal);
     getchar();
@@ -1036,10 +1013,58 @@ void Menu::changeAnimalOwner() {
   }
 }
 
-void Menu::removeAnimal() {
-  int id = inputAnimalId();
-  if (id == -1)
+void Menu::addAnimalParticipation() {
+  int animalId = currentAnimal.getId();
+  int competitionId = inputCompetitionId();
+  if (competitionId == -1)
     return;
+  string award;
+  cout << "Enter award:\n";
+  getline(cin, award);
+  try {
+    Participation participation = participationRepository.add(animalId, competitionId, award);
+    cout << "Success!\n";
+    printParticipation(participation);
+    getchar();
+  } catch(exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::listAnimalParticipations() {
+  try {
+    int animalId = currentAnimal.getId();
+    vector<Participation> participations = participationRepository.findByAnimalId(animalId);
+    printParticipations(participations);
+    getchar();
+  } catch(exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::removeAnimalParticipation() {
+  try {
+    int animalId = currentAnimal.getId();
+    vector<Participation> participations = participationRepository.findByAnimalId(animalId);
+    cout << "Choose participation:\n";
+    printParticipations(participations);
+    int choice = getChoice(1, participations.size());
+    participationRepository.remove(participations[choice - 1].getAnimalId(), participations[choice - 1].getCompetitionId());
+    cout << "Success!\n";
+    getchar();
+  } catch(exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::removeAnimal() {
+  int id = currentAnimal.getId();
   try {
     deleteAnimal(id);
   } catch (exception& e) {
@@ -1050,6 +1075,9 @@ void Menu::removeAnimal() {
 }
 
 void Menu::deleteAnimal(int id) {
+  vector<Participation> participations = participationRepository.findByAnimalId(id);
+  for (int i = 0; i < participations.size(); i++)
+    deleteParticipation(participations[i].getAnimalId(), participations[i].getCompetitionId());
   animalRepository.remove(id);
   cout << "Success!\n";
   getchar();
@@ -1189,16 +1217,13 @@ void Menu::addCompetition() {
 }
 
 void Menu::changeCompetitionName() {
-  int id = inputCompetitionId();
-  if (id == -1)
-    return;
+  int id = currentCompetition.getId();
   try {
     string name;
     cout << "Enter name of the competition:\n";
     getline(cin, name);
-    Competition oldCompetition = competitionRepository.get(id);
-    string location = oldCompetition.getLocation();
-    tm date = oldCompetition.getDate();
+    string location = currentCompetition.getLocation();
+    tm date = currentCompetition.getDate();
     Competition updatedCompetition = competitionRepository.update(id, name, location, date);
     cout << "Success!\n";
     printCompetition(updatedCompetition);
@@ -1211,16 +1236,13 @@ void Menu::changeCompetitionName() {
 }
 
 void Menu::changeCompetitionLocation() {
-  int id = inputCompetitionId();
-  if (id == -1)
-    return;
+  int id = currentCompetition.getId();
   try {
     string location;
     cout << "Enter location of the competition:\n";
     getline(cin, location);
-    Competition oldCompetition = competitionRepository.get(id);
-    string name = oldCompetition.getName();
-    tm date = oldCompetition.getDate();
+    string name = currentCompetition.getName();
+    tm date = currentCompetition.getDate();
     Competition updatedCompetition = competitionRepository.update(id, name, location, date);
     cout << "Success!\n";
     printCompetition(updatedCompetition);
@@ -1233,16 +1255,13 @@ void Menu::changeCompetitionLocation() {
 }
 
 void Menu::changeCompetitionDate() {
-  int id = inputCompetitionId();
-  if (id == -1)
-    return;
+  int id = currentCompetition.getId();
   try {
     optional<tm> date = inputDate();
     if (!date.has_value())
       return;
-    Competition oldCompetition = competitionRepository.get(id);
-    string name = oldCompetition.getName();
-    string location = oldCompetition.getLocation();
+    string name = currentCompetition.getName();
+    string location = currentCompetition.getLocation();
     Competition updatedCompetition = competitionRepository.update(id, name, location, date.value());
     cout << "Success!\n";
     printCompetition(updatedCompetition);
@@ -1254,12 +1273,60 @@ void Menu::changeCompetitionDate() {
   }
 }
 
-void Menu::removeCompetition() {
-  int id = inputCompetitionId();
-  if (id == -1)
+void Menu::addCompetitionParticipation() {
+  int competitionId = currentCompetition.getId();
+  int animalId = inputAnimalId();
+  if (animalId == -1)
     return;
+  string award;
+  cout << "Enter award:\n";
+  getline(cin, award);
   try {
-    competitionRepository.remove(id);
+    Participation participation = participationRepository.add(animalId, competitionId, award);
+    cout << "Success!\n";
+    printParticipation(participation);
+    getchar();
+  } catch(exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::listCompetitionParticipations() {
+  try {
+    int id = currentCompetition.getId();
+    vector<Participation> participations = participationRepository.findByCompetitionId(id);
+    printParticipations(participations);
+    getchar();
+  } catch(exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::removeCompetitionParticipation() {
+  try {
+    int id = currentCompetition.getId();
+    vector<Participation> participations = participationRepository.findByCompetitionId(id);
+    cout << "Choose participation:\n";
+    printParticipations(participations);
+    int choice = getChoice(1, participations.size());
+    participationRepository.remove(participations[choice - 1].getAnimalId(), participations[choice - 1].getCompetitionId());
+    cout << "Success!\n";
+    getchar();
+  } catch(exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
+}
+
+void Menu::removeCompetition() {
+  int id = currentCompetition.getId();
+  try {
+    deleteCompetition(id);
   } catch(exception& e) {
     cout << e.what() << "\n";
     getchar();
@@ -1268,6 +1335,9 @@ void Menu::removeCompetition() {
 }
 
 void Menu::deleteCompetition(int id) {
+  vector<Participation> participations = participationRepository.findByCompetitionId(id);
+  for (int i = 0; i < participations.size(); i++)
+    deleteParticipation(participations[i].getAnimalId(), participations[i].getCompetitionId());
   competitionRepository.remove(id);
   cout << "Success!\n";
   getchar();
@@ -1334,4 +1404,40 @@ optional<tm> Menu::inputDate() {
     return emptyDate;
   }
   return date;
+}
+
+void Menu::printParticipations(vector<Participation> participations) {
+  cout << "Participations:\n";
+  if (participations.size() == 0)
+    cout << "No participations found\n";
+  for (int i = 0; i < participations.size(); i++) {
+    cout << i + 1 << ". ";
+    printParticipation(participations[i]);
+  }
+}
+
+void Menu::printParticipation(Participation participation) {
+  Animal animal = animalRepository.get(participation.getAnimalId());
+  Breed breed = breedRepository.get(animal.getBreedId());
+  Competition competition = competitionRepository.get(participation.getCompetitionId());
+  stringstream dateStream;
+  tm date = competition.getDate();
+  dateStream << put_time(&date, "%Y-%m-%d");
+  cout << "Animal name: " << animal.getName() <<
+          ", Breed name: " << breed.getName() <<
+          ", Competition name: " << competition.getName() <<
+          ", Date: " << dateStream.str() <<
+          ", Award: " << participation.getAward() <<"\n";
+}
+
+void Menu::deleteParticipation(int animalId, int competitionId) {
+  try {
+    participationRepository.remove(animalId, competitionId);
+    cout << "Success!\n";
+    getchar();
+  } catch(exception& e) {
+    cout << e.what() << "\n";
+    getchar();
+    return;
+  }
 }

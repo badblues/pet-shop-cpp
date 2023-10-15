@@ -43,6 +43,16 @@ class ParticipationRepository {
       return parseParticipations(result);
     }
 
+    vector<Participation> findByAnimalId(int animalId) {
+      vector<vector<string>> result = gateway.findByAnimalId(animalId);
+      return parseParticipations(result);
+    }
+
+    vector<Participation> findByCompetitionId(int competitionId) {
+      vector<vector<string>> result = gateway.findByCompetitionId(competitionId);
+      return parseParticipations(result);
+    }
+
   private:
     ParticipationDatabaseGateway gateway;
 
